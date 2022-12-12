@@ -9,7 +9,7 @@ export class AuthService {
     otpExpirationStart: number;
 
 
-    createPassword(): string {
+    createOtp(): string {
         const words = ["1", "2", "3", "4"].map((word) => {
             for (let i = 0; i < 5; i++) {
               word += this.characters.charAt(Math.floor(Math.random() * this.characters.length));
@@ -23,7 +23,7 @@ export class AuthService {
     }
 
     async sendOtpByEmail(email: string): Promise<void> {
-        const password = this.createPassword();
+        const password = this.createOtp();
         const config = {
       service: "gmail",
       auth: {
@@ -58,7 +58,7 @@ export class AuthService {
 
         console.log(secondsElapsed);
         
-        return secondsElapsed > 30
+        return secondsElapsed > 120
             ? false
             : true
 
@@ -68,5 +68,9 @@ export class AuthService {
         }
 
        return false
+    }
+
+    createPassword( password: string){
+
     }
 }
