@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as nodemailer from "nodemailer";
-import { interval, map, Observable, timer } from 'rxjs';
+import { hash, compare } from 'bcrypt';
+import { loginUserDto } from './DTOs/login.dto';
+import { Router } from 'express';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -8,6 +11,7 @@ export class AuthService {
     private otp: string = ""
     otpExpirationStart: number;
 
+    constructor(private jwtService: JwtService) {}
 
     createOtp(): string {
         const words = ["1", "2", "3", "4"].map((word) => {
@@ -70,7 +74,27 @@ export class AuthService {
        return false
     }
 
-    createPassword( password: string){
+    async hashPassword( password: string){
+        const plainToHash = await hash(password, 10);
+        password = plainToHash
+    }
 
+    async login({email, password}: loginUserDto) {
+        /* const findUser = await this.userModel.findOne({email})
+
+        if(!findUser) throw new HttpException('USER_NOT_FOUND', 404);
+
+        const checkPassword = await compare(password, findUser.password);
+
+        if(!checkPassword) throw new HttpException('PASSWORD_INVALID', 403);
+
+        const payload = {id: findUser.id, nick:findUser.nick}
+        const token = this.jwtService.sign(payload)
+        const data = {
+            user: findUser,
+            token
+        };
+
+        return data */
     }
 }

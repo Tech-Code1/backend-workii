@@ -1,7 +1,10 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { Hash } from "crypto";
 import * as nodemailer from "nodemailer";
 import { AuthService } from "./auth.service";
+import { loginUserDto } from "./DTOs/login.dto";
+import { registerUserDto } from "./DTOs/register.dto";
 
 @ApiTags('auth')
 @Controller("auth")
@@ -28,8 +31,14 @@ export class AuthController {
   }
 
   @Post("register")
-  async register(@Body("email") email: string) {
-    this.email = email;
-    
+  async register(@Body("email") {email = this.email, password, ...userRegister}: registerUserDto) {  
+    this.authService.hashPassword(password)
+
+    //return this.userModel({email, password, ...userRegister})
+  }
+
+  @Post("login")
+  loginUser(@Body() userLogin: loginUserDto) {
+    return this.authService.login(userLogin)
   }
 }
