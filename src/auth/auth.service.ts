@@ -1,9 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import * as nodemailer from "nodemailer";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { hash, compare } from 'bcrypt';
 import { loginUserDto } from './DTOs/login.dto';
-import { Router } from 'express';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +8,8 @@ export class AuthService {
     private otp: string = ""
     otpExpirationStart: number;
 
-    constructor(private jwtService: JwtService) {}
+    constructor() {
+    }
 
     createOtp(): string {
         const words = ["1", "2", "3", "4"].map((word) => {
@@ -26,35 +24,14 @@ export class AuthService {
           return this.otp = words.join("-");      
     }
 
-    async sendOtpByEmail(email: string): Promise<void> {
-        const password = this.createOtp();
-        const config = {
-      service: "gmail",
-      auth: {
-          user: process.env.NODEMAILER_USER,
-          pass: process.env.PASS_GMAIL,
-      },
-    }
-    const mailOptions = {
-      from: process.env.NODEMAILER_USER,
-      to: email,
-      subject: "Contraseña para crear una cuenta en Workii",
-      html: `<h1>Your one-time password is: ${password}</h1>`,
-    };
-
-    const transporter = nodemailer.createTransport(config);
-    await transporter.sendMail(mailOptions, (err) => {
-        if(err) {
-            console.log('No se a podido enviar el correo, algo inesperado a pasado.');
-        } else {
-            console.log(`Correo electronico enviado a: ${email}`);
-        }
-    });
-    }
 
     validateTimePassword(otpEntry: string): boolean {
 
         //console.log(this.otp);
+
+        if(otpEntry === "" || !this.otp) {
+            throw new NotFoundException("El OTP es invalido, genera otro para poder acceder");
+        }
         
        if (otpEntry === this.otp ) {
         console.log("El Otp coincide");
@@ -68,15 +45,13 @@ export class AuthService {
 
         } else {
             
-            console.log("El Otp es erroneo");
+            throw new NotFoundException("El OTP es erroneo");
         }
-
-       return false
     }
 
-    async hashPassword( password: string){
+    async hashPassword( password: string) {
         const plainToHash = await hash(password, 10);
-        password = plainToHash
+        return password = plainToHash
     }
 
     async login({email, password}: loginUserDto) {

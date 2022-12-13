@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import * as Joi from 'joi'
-import { enviroments } from './environments';
+import { UsersModule } from './users/users.module';
 import config from './config';
-import { any } from 'joi';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -13,7 +12,8 @@ import { any } from 'joi';
       envFilePath: '.env', 
       load: [config],
       isGlobal: true,
-    }),
+    }), 
+    UsersModule,
   ],
   controllers: [],
   providers: [],
