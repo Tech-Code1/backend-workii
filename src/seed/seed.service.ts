@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSeedDto } from './dto/create-seed.dto';
-import { UpdateSeedDto } from './dto/update-seed.dto';
+import { UsersService } from 'src/users/users.service';
+import { WorkiisService } from 'src/workiis/workiis.service';
+import { USERS_SEED } from './data/users.seed';
+import { WORKIIS_SEED } from './data/workiis.seed';
 
 @Injectable()
 export class SeedService {
-  create(createSeedDto: CreateSeedDto) {
-    return 'This action adds a new seed';
+
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly workiisService: WorkiisService
+  ) {}
+
+  populateDB() {
+    //USERS_SEED
+    //WORKIIS_SEED
+
+    this.usersService.fillUsersWithSeedData(USERS_SEED)
+    this.workiisService.fillWorkiisWithSeedData(WORKIIS_SEED)
+    return 'Seed executed successfully';
   }
 
-  findAll() {
-    return `This action returns all seed`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} seed`;
-  }
-
-  update(id: number, updateSeedDto: UpdateSeedDto) {
-    return `This action updates a #${id} seed`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} seed`;
-  }
 }

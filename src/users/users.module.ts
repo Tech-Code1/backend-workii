@@ -12,6 +12,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthService
   ],
   exports: [
+    UsersService
   ]
 })
 export class UsersModule {}

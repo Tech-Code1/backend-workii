@@ -4,6 +4,9 @@ import { WorkiisService } from './workiis.service';
 
 @Module({
   controllers: [WorkiisController],
-  providers: [WorkiisService]
+  providers: [WorkiisService],
+  exports: [
+    WorkiisService
+  ]
 })
 export class WorkiisModule {}

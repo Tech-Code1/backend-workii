@@ -100,4 +100,9 @@ export class UsersService {
                 }
             });
     }
+
+    /* no production */
+    fillUsersWithSeedData(user: IUser[]){
+        this.users = user;
+    }
 }

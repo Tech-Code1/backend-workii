@@ -19,7 +19,7 @@ export class Workii {
     toDoList: string[];
     cost: number;
     status: string[];
-    applications?: string;
+    applications?: number;
     executionTime: number;
     timeOfCreation: number;
     timeOfFinished?: number;

@@ -93,4 +93,9 @@ timelImit(days: number): number {
   remove(id: string) {
     this.workiis = this.workiis.filter(workii => workii.id !== id)
   }
+
+  /* no production */
+  fillWorkiisWithSeedData(workii: Workii[]){
+    this.workiis = workii;
+}
 }
