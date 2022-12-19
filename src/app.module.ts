@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import config from './config';
 import { AuthService } from './auth/auth.service';
+import { WorkiisModule } from './workiis/workiis.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { AuthService } from './auth/auth.service';
       load: [config],
       isGlobal: true,
     }), 
-    UsersModule,
+    UsersModule, WorkiisModule, SeedModule,
   ],
   controllers: [],
   providers: [],
