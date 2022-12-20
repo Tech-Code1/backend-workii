@@ -4,7 +4,7 @@ import { CreateWikiiDto } from './dto/create-workiis.dto';
 import { UpdateWikiiDto } from './dto/update-workiis.dto';
 import { WorkiisService } from './workiis.service';
 
-@Controller('wikiis')
+@Controller('workiis')
 export class WorkiisController {
   constructor(private readonly workiisService: WorkiisService) {}
 

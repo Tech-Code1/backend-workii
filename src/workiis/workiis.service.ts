@@ -19,25 +19,6 @@ export class WorkiisService {
     @InjectRepository(Workii)
     private readonly workiiRepository: Repository<Workii>
   ){}
-/* 
-  private workiis: Workii[] = [
-    {
-    id: uuidv4(),
-    name: "Crear un diseño",
-    target: [],
-    description: "Crear un logo bonito",
-    toDoList: [
-      "El logo debe representar los colores de la empresa",
-      "El logo debe ser redondo"
-
-    ],
-    cost: 100,
-    status: "Iniciada",
-    executionTime: 3,
-    timeOfCreation: new Date().getTime()
-  }
-] */
-  
 
   async create(createWikiiDto: CreateWikiiDto) {
 
@@ -80,14 +61,19 @@ export class WorkiisService {
     throw new NotFoundException("Los días ingresados son invalidos");
 } */
 
+  //TODO: pagination
   findAll() {
-    //return this.workiis;
+    return this.workiiRepository.find({});
   }
 
-  findOne(id: string) {
-   /*  const workii = this.workiis.find((workii) => workii.id === id)
-    if(!workii) throw new NotFoundException(`Workii with id "${id}" not found`) */
-   
+  async findOne(id: string) {
+
+    const workii = await this.workiiRepository.findOneBy({id});
+
+    if (!workii) 
+    throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+
+    return workii
   }
 
   update(id: string, updateWikiiDto: UpdateWikiiDto) {
@@ -104,8 +90,16 @@ export class WorkiisService {
     }) */
   }
 
-  remove(id: string) {
-    //this.workiis = this.workiis.filter(workii => workii.id !== id)
+  async remove(id: string) {
+    const workii = await this.workiiRepository.findOneBy({id});
+
+    if(workii !== null) {
+
+      await this.workiiRepository.remove(workii);
+
+    } else {
+      throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+    }
   }
 
   /* no production */
