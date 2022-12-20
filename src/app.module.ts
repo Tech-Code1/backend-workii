@@ -6,6 +6,7 @@ import config from './config';
 import { AuthService } from './auth/auth.service';
 import { WorkiisModule } from './workiis/workiis.module';
 import { SeedModule } from './seed/seed.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -15,7 +16,19 @@ import { SeedModule } from './seed/seed.module';
       load: [config],
       isGlobal: true,
     }), 
-    UsersModule, WorkiisModule, SeedModule,
+    UsersModule, 
+    WorkiisModule, 
+    SeedModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT! || 5432,
+      database: process.env.DB_NAME,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      autoLoadEntities: true,
+      synchronize: true,
+    })
   ],
   controllers: [],
   providers: [],
