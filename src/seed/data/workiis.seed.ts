@@ -14,7 +14,7 @@ export const WORKIIS_SEED: Workii[] = [
         'El programa debe de ser intuitivo'
         ],
         cost: 20,
-        status: ['iniciado'],
+        status: 'iniciado',
         applications: 3,
         executionTime: 12,
         timeOfCreation: 12,
@@ -31,7 +31,7 @@ export const WORKIIS_SEED: Workii[] = [
         'En la ilustración debe aparecer 2 personajes'
         ],
         cost: 20,
-        status: ['Busqueda'],
+        status: 'Busqueda',
         applications: 3,
         executionTime: 12,
         timeOfCreation: 12,

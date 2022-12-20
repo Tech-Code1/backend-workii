@@ -1,15 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { CreateWikiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
+
 
 @Injectable()
 export class WorkiisService {
 
+  count = 1;
   today = new Date();
-  sevenDaysFromToday = new Date();
+  private readonly logger = new Logger('WorkiisService');
 
+  constructor(
+    @InjectRepository(Workii)
+    private readonly workiiRepository: Repository<Workii>
+  ){}
+/* 
   private workiis: Workii[] = [
     {
     id: uuidv4(),
@@ -22,33 +32,37 @@ export class WorkiisService {
 
     ],
     cost: 100,
-    status: ["Iniciada"],
+    status: "Iniciada",
     executionTime: 3,
     timeOfCreation: new Date().getTime()
   }
-]
+] */
   
 
-  create(createWikiiDto: CreateWikiiDto) {
+  async create(createWikiiDto: CreateWikiiDto) {
 
-    let {name, target, description, toDoList, cost, status, executionTime} = createWikiiDto
-
-    executionTime = this.timelImit(executionTime)
-
-    const workii: Workii = {
-      id: uuidv4(),
-      name: name.toLocaleLowerCase(),
-      target: target,
-      description: description,
-      toDoList: toDoList,
-      cost: cost,
-      status: status,
-      executionTime: executionTime,
-      timeOfCreation: new Date().getTime()
+    let {name, executionTime, ...restData} = createWikiiDto
+    try {
+      const workii = this.workiiRepository.create(
+        {
+          id: uuidv4(),
+          name: name.toLocaleLowerCase(),
+          ...restData,
+          status: 'Busqueda',
+          executionTime: 3,
+          timeOfCreation: new Date().getTime()
+        }
+      );
+      await this.workiiRepository.save(workii);
+      return workii;
+      
+    } catch (error) {
+      
+      this.handleExceptions(error)
     }
   }
 
-timelImit(days: number): number {
+/* timelImit(days: number): number {
 
     let dataInitial: Date = new Date()
 
@@ -60,19 +74,19 @@ timelImit(days: number): number {
 
         }
             
-        return days = 3
+        return  dataInitial.setDate(dataInitial.getDate() + 3)
     } 
 
     throw new NotFoundException("Los días ingresados son invalidos");
-}
+} */
 
   findAll() {
-    return this.workiis;
+    //return this.workiis;
   }
 
   findOne(id: string) {
-    const workii = this.workiis.find((workii) => workii.id === id)
-    if(!workii) throw new NotFoundException(`Workii with id "${id}" not found`)
+   /*  const workii = this.workiis.find((workii) => workii.id === id)
+    if(!workii) throw new NotFoundException(`Workii with id "${id}" not found`) */
    
   }
 
@@ -91,11 +105,21 @@ timelImit(days: number): number {
   }
 
   remove(id: string) {
-    this.workiis = this.workiis.filter(workii => workii.id !== id)
+    //this.workiis = this.workiis.filter(workii => workii.id !== id)
   }
 
   /* no production */
   fillWorkiisWithSeedData(workii: Workii[]){
-    this.workiis = workii;
+    //this.workiis = workii;
 }
+
+private handleExceptions(error: IErrorsTypeORM) {
+
+  if(error.code === '23505')
+      throw new BadRequestException(error.detail);
+
+      this.logger.error(error)
+      //console.log(error);
+      throw new InternalServerErrorException('Unexpected error, check server logs')
+  }
 }
