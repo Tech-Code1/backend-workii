@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import { CreateWikiiDto } from './dto/create-workiis.dto';
 import { UpdateWikiiDto } from './dto/update-workiis.dto';
 import { WorkiisService } from './workiis.service';
+import { PaginationDto } from '../common/DTOs/pagination.dto';
 
 @Controller('workiis')
 export class WorkiisController {
@@ -14,8 +15,9 @@ export class WorkiisController {
   }
 
   @Get()
-  findAll() {
-    return this.workiisService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    //console.log(paginationDto);
+    return this.workiisService.findAll(paginationDto);
   }
 
   @Get(':id')

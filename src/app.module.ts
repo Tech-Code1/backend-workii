@@ -7,6 +7,7 @@ import { AuthService } from './auth/auth.service';
 import { WorkiisModule } from './workiis/workiis.module';
 import { SeedModule } from './seed/seed.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       synchronize: true,
-    })
+    }),
+    CommonModule
   ],
   controllers: [],
   providers: [],

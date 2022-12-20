@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
+import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 
 
 @Injectable()
@@ -62,8 +63,15 @@ export class WorkiisService {
 } */
 
   //TODO: pagination
-  findAll() {
-    return this.workiiRepository.find({});
+  findAll(paginationDto: PaginationDto) {
+    const { limit= 10, offset= 0 } = paginationDto
+
+    //console.log(paginationDto);
+    return this.workiiRepository.find({
+      take: limit,
+      skip: offset
+      // TODO: relaciones
+    });
   }
 
   async findOne(id: string) {
