@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+/* import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { WorkiisService } from 'src/workiis/workiis.service';
 import { USERS_SEED } from './data/users.seed';
@@ -22,3 +22,4 @@ export class SeedService {
   }
 
 }
+ */

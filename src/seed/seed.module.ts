@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+/* import { Module } from '@nestjs/common';
 import { SeedService } from './seed.service';
 import { SeedController } from './seed.controller';
 import { UsersModule } from '../users/users.module';
@@ -13,3 +13,4 @@ import { WorkiisModule } from '../workiis/workiis.module';
   ]
 })
 export class SeedModule {}
+ */

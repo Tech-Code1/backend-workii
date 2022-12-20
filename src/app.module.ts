@@ -5,9 +5,10 @@ import { UsersModule } from './users/users.module';
 import config from './config';
 import { AuthService } from './auth/auth.service';
 import { WorkiisModule } from './workiis/workiis.module';
-import { SeedModule } from './seed/seed.module';
+//import { SeedModule } from './seed/seed.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
+//import { UrlModule } from './url/url.module';
 
 @Module({
   imports: [
@@ -18,8 +19,7 @@ import { CommonModule } from './common/common.module';
       isGlobal: true,
     }), 
     UsersModule, 
-    WorkiisModule, 
-    SeedModule,
+    WorkiisModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -30,7 +30,7 @@ import { CommonModule } from './common/common.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CommonModule
+    CommonModule,
   ],
   controllers: [],
   providers: [],

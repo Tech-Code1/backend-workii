@@ -7,6 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
+import { Url } from 'src/url/url.entity';
+import { nanoid } from 'nanoid';
+import { validate as IsUUID } from 'uuid';
 
 
 @Injectable()
@@ -18,18 +21,22 @@ export class WorkiisService {
 
   constructor(
     @InjectRepository(Workii)
-    private readonly workiiRepository: Repository<Workii>
+    private readonly workiiRepository: Repository<Workii>,
+    /* @InjectRepository(Url)
+    private readonly urlRepository: Repository<Url> */
   ){}
 
   async create(createWikiiDto: CreateWikiiDto) {
 
     let {name, executionTime, ...restData} = createWikiiDto
+
     try {
       const workii = this.workiiRepository.create(
         {
           id: uuidv4(),
           name: name.toLocaleLowerCase(),
           ...restData,
+          slug: nanoid(10),
           status: 'Busqueda',
           executionTime: 3,
           timeOfCreation: new Date().getTime()
@@ -74,12 +81,25 @@ export class WorkiisService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(code: string) {
 
-    const workii = await this.workiiRepository.findOneBy({id});
+    let workii: Workii | null;
+
+    if(IsUUID(code)) {
+      workii = await this.workiiRepository.findOneBy({ id: code })
+
+    } else {
+
+      const queryBuilder = this.workiiRepository.createQueryBuilder();
+      workii = await queryBuilder
+      .where('slug =:slug', {
+        slug: code
+      }).getOne();
+      //workii = await this.workiiRepository.findOneBy({ slug: code })
+    }
 
     if (!workii) 
-    throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+    throw new NotFoundException(`El workii con el id ${code} no fue encontrado`)
 
     return workii
   }

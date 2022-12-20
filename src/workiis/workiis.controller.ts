@@ -20,9 +20,9 @@ export class WorkiisController {
     return this.workiisService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.workiisService.findOne(id);
+  @Get(':code')
+  findOne(@Param('code') code: string) {
+    return this.workiisService.findOne(code);
   }
 
   @Patch(':id')

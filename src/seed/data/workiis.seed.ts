@@ -1,4 +1,4 @@
-import { IUser } from "src/users/interfaces/user.interface";
+/* import { IUser } from "src/users/interfaces/user.interface";
 import { Workii } from "src/workiis/entities/workiis.entity";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -37,4 +37,4 @@ export const WORKIIS_SEED: Workii[] = [
         timeOfCreation: 12,
         timeOfFinished: 12
     },
-]
+] */
