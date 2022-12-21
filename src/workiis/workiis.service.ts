@@ -95,7 +95,6 @@ export class WorkiisService {
       .where('slug =:slug', {
         slug: code
       }).getOne();
-      //workii = await this.workiiRepository.findOneBy({ slug: code })
     }
 
     if (!workii) 
@@ -104,18 +103,28 @@ export class WorkiisService {
     return workii
   }
 
-  update(id: string, updateWikiiDto: UpdateWikiiDto) {
-    //const {cost, description, executionTime, name, target, toDoList} = updateWikiiDto
+  async update(id: string, updateWikiiDto: UpdateWikiiDto) {
+    const workii = await this.workiiRepository.preload({
+      id: id,
+      ...updateWikiiDto
+    })
 
-    /* let workiiDB = this.findOne(id);
+    if(!workii) {
+      throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+    }
 
-    this.workiis = this.workiis.map( workii => {
-      if(workii.id === id) {
-        workiiDB = {...workiiDB, ...updateWikiiDto}
-        return workiiDB
-      }
-      return workiiDB
-    }) */
+    try {
+      
+      await this.workiiRepository.save(workii)
+      return workii;
+
+    } catch (error) {
+
+      this.handleExceptions(error)
+      
+    }
+
+
   }
 
   async remove(id: string) {
