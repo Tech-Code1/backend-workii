@@ -5,12 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 export class UpdateUserDto {
 
     @ApiProperty()
-    @IsString()
-    @IsUUID()
-    @IsOptional()
-    readonly id?: string = uuidv4();
-
-    @ApiProperty()
     @IsEmail({ message: "El correo debe ser valido"})
     @MinLength(5, { message:"El campo debe tener por lo menos 5 caracteres" })
     @MaxLength(100, { message: "El campo excede el número de caracteres permitidos"})

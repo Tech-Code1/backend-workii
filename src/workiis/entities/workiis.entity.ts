@@ -1,7 +1,8 @@
 import { NotFoundException } from "@nestjs/common";
 import { throwError } from "rxjs";
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
 import { Url } from '../../url/url.entity'
+import { User } from '../../users/users.entity';
 
 let counter = 1;
 @Entity()
@@ -45,8 +46,10 @@ export class Workii {
     @Column('numeric', {default: 0, name: 'time_of_finished'})
     timeOfFinished?: number;
 
-    /* @OneToOne(() => Url)
-    @JoinColumn({name: 'url_id'})
-    url: Url */
+    @ManyToOne(
+      () => User,
+      (user: User) => user.workiis
+    )
+    user: User
 }
 

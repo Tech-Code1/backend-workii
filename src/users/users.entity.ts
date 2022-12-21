@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
+import { Workii } from '../workiis/entities/workiis.entity';
 
 @Entity()
 export class User {
@@ -26,5 +27,11 @@ export class User {
 
     @Column('numeric', {name: 'time_of_creation'})
     timeOfCreation: number;
+
+    @OneToMany(
+        () => Workii,
+        (workii: Workii) => workii.user,
+    )
+    workiis?: Workii[]
 }
 

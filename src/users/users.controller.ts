@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
-import { UserDto } from 'src/users/DTOs/create-user.dto';
-import { UpdateUserDto } from './DTOs/update-user.dto';
+import { UpdateUserDto, CreateUserDto } from './DTOs/index.dto';
+import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -14,8 +14,8 @@ export class UsersController {
         private authService: AuthService) {}
 
     @Get()
-    getAllUser() {
-        this.usersService.getAll()
+    getAllUser(@Query() paginationDto: PaginationDto) {
+       return this.usersService.getAll(paginationDto)
     }
 
     @Get(':id')
@@ -26,7 +26,7 @@ export class UsersController {
 
 
     @Post()
-    async createUser(@Body() userRegister: UserDto) {  
+    async createUser(@Body() userRegister: CreateUserDto) {  
     
         //console.log(id);
         return this.usersService.create(userRegister)

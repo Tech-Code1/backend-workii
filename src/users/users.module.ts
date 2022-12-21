@@ -7,6 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { User } from './users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
+import { Workii } from '../workiis/entities/workiis.entity';
 
 @Module({
   controllers: [UsersController],
@@ -18,7 +19,7 @@ import { CommonService } from 'src/common/common.service';
     UsersService
   ],
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Workii]),
     AuthModule
   ]
 })

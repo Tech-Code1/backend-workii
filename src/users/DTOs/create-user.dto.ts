@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional } from 'class-validator';
+import { Workii } from 'src/workiis/entities/workiis.entity';
 
-export class UserDto {
+export class CreateUserDto {
 
     @ApiProperty()
     @IsEmail({ message: "El correo debe ser valido"})
@@ -37,4 +38,8 @@ export class UserDto {
     @IsArray({message: `La profesión debe ser un array de strings`})
     @ApiProperty({enum: ['programador', 'Veterinario', 'Bioquimico', 'Profesor/ra']})
     readonly profession: string[] = [];
+
+    @ApiProperty()
+    @IsArray({message: `Los workiis deben ser un array de strings`})
+    readonly workiis?: Workii[] = [];
 }

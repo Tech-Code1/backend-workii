@@ -2,13 +2,15 @@ import { Injectable, ParseIntPipe, NotFoundException, BadRequestException, Inter
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from './interfaces/user.interface';
 import { AuthService } from 'src/auth/auth.service';
-import { UpdateUserDto, UserDto } from './DTOs/index.dto';
+import { UpdateUserDto } from './DTOs/index.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
 import { User } from './users.entity';
-import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
 import { CommonService } from 'src/common/common.service';
+import { CreateUserDto } from './DTOs/create-user.dto';
+import { Workii } from '../workiis/entities/workiis.entity';
+import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 
 
 @Injectable()
@@ -22,10 +24,12 @@ export class UsersService {
         private authService: AuthService,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(Workii)
+        private readonly workiiRepository: Repository<Workii>,
         private readonly commonServices: CommonService   
         ) {}
 
-    async create({password, email, ...users}: UserDto) {
+    async create({password, email, workiis = [], ...usersDetails}: CreateUserDto) {
         
         password = this.password
 
@@ -38,7 +42,10 @@ export class UsersService {
                     id: uuidv4(),
                     password: hashedPassword,
                     email: this.email,
-                    ...users,
+                    ...usersDetails,
+                    workiis: workiis.map((workii: Workii) => {
+                       return this.workiiRepository.create(workii)
+                    }),
                     timeOfCreation: new Date().getTime()
                 }
             )
@@ -46,7 +53,7 @@ export class UsersService {
                 console.log(this.authService.otpTime);
                 
                 await this.userRepository.save(user)
-                return user;
+                return {...user, workiis};
 
         }
 
@@ -69,25 +76,41 @@ export class UsersService {
     }
 
 
-    getAll() {
-        /* return this.users */
+    getAll(paginationDto: PaginationDto) {
+        const { limit= 10, offset= 0 } = paginationDto
+
+        //console.log(paginationDto);
+        return this.userRepository.find({
+        take: limit,
+        skip: offset,
+        relations: {
+            workiis: true
+        }
+        });
     }
 
 
-    update(id: string, updateUserDto: UpdateUserDto) {
-        /* let userDB = this.getUserById(id);
+    async update(id: string, updateUserDto: UpdateUserDto) {
 
-        if (updateUserDto.id && updateUserDto.id !== id)
-          throw new BadRequestException('El id ingresado no es valido');
-     
-        const index = this.users.findIndex((user) => user.id === id);
-        userDB = {
-          ...userDB,
-          ...updateUserDto,
-          id,
-        };
-        this.users[index] =userDB;
-        return userDB; */
+        const user = await this.userRepository.preload({
+            id: id,
+            ...updateUserDto
+          })
+      
+          if(!user) {
+            throw new NotFoundException(`El usuario con el id ${id} no fue encontrado`)
+          }
+      
+          try {
+            
+            await this.userRepository.save(user)
+            return user;
+      
+          } catch (error) {
+      
+            this.commonServices.handleExceptions(error)
+            
+          }
     }
 
 
