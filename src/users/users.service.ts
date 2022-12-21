@@ -1,9 +1,13 @@
-import { Injectable, ParseIntPipe, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, ParseIntPipe, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from './interfaces/user.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateUserDto, UserDto } from './DTOs/index.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
+import { User } from './users.entity';
+import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
 
 
 @Injectable()
@@ -11,9 +15,13 @@ export class UsersService {
 
     email: string;
     password: string;
-    users: IUser[] = [];
+    private readonly logger = new Logger('UsersService');
 
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>   
+        ) {}
 
     async create({password, email, ...users}: UserDto) {
         
@@ -21,34 +29,43 @@ export class UsersService {
 
         const hashedPassword = await this.authService.hashPassword(password);
 
-            const user: IUser = {
-                id: uuidv4(),
-                password: hashedPassword,
-                email: this.email,
-                ...users
-            }   
+        try {
+            const user = this.userRepository.create(
+                {
+                    id: uuidv4(),
+                    password: hashedPassword,
+                    email: this.email,
+                    ...users,
+                    timeOfCreation: new Date().getTime()
+                }
+            )
 
-            await this.users.push(user);
-            
-            return user
+            await this.userRepository.save(user)
+            return user;
+
+        } catch (error) {
+
+            this.handleExceptions(error)
+
+        }
     }
 
 
     getUserById(id: string) {
-        const user = this.users.find(user => user.id);
+        /* const user = this.users.find(user => user.id);
         if(!user) throw new NotFoundException(`El usuario con el siguiente id: ${id} no se ha encontrado`);
 
-        return user
+        return user */
     }
 
 
     getAll() {
-        return this.users
+        /* return this.users */
     }
 
 
     update(id: string, updateUserDto: UpdateUserDto) {
-        let userDB = this.getUserById(id);
+        /* let userDB = this.getUserById(id);
 
         if (updateUserDto.id && updateUserDto.id !== id)
           throw new BadRequestException('El id ingresado no es valido');
@@ -60,13 +77,13 @@ export class UsersService {
           id,
         };
         this.users[index] =userDB;
-        return userDB;
+        return userDB; */
     }
 
 
     delete(id: string) {
-        const user = this.getUserById(id);
-        this.users = this.users.filter(user => user.id !== id);
+        /* const user = this.getUserById(id);
+        this.users = this.users.filter(user => user.id !== id); */
     }
 
 
@@ -103,6 +120,16 @@ export class UsersService {
 
     /* no production */
     fillUsersWithSeedData(user: IUser[]){
-        this.users = user;
+        //this.users = user;
+    }
+
+    private handleExceptions(error: IErrorsTypeORM) {
+
+    if(error.code === '23505')
+        throw new BadRequestException(error.detail);
+    
+        this.logger.error(error)
+        //console.log(error);
+        throw new InternalServerErrorException('Unexpected error, check server logs')
     }
 }

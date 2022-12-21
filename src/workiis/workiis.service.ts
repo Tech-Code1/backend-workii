@@ -144,7 +144,7 @@ export class WorkiisService {
     //this.workiis = workii;
 }
 
-private handleExceptions(error: IErrorsTypeORM) {
+  private handleExceptions(error: IErrorsTypeORM) {
 
   if(error.code === '23505')
       throw new BadRequestException(error.detail);

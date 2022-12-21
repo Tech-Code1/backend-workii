@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional } from 'class-validator';
-import { v4 as uuidv4 } from 'uuid';
 
 export class UserDto {
 

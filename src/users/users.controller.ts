@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patc
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
-import { UserDto } from 'src/users/DTOs/register.dto';
+import { UserDto } from 'src/users/DTOs/create-user.dto';
 import { UpdateUserDto } from './DTOs/update-user.dto';
 
 @ApiBearerAuth()
