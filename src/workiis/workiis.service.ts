@@ -10,6 +10,7 @@ import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { Url } from 'src/url/url.entity';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
+import { CommonService } from '../common/common.service';
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class WorkiisService {
   constructor(
     @InjectRepository(Workii)
     private readonly workiiRepository: Repository<Workii>,
+    private readonly commonServices: CommonService
     /* @InjectRepository(Url)
     private readonly urlRepository: Repository<Url> */
   ){}
@@ -47,7 +49,7 @@ export class WorkiisService {
       
     } catch (error) {
       
-      this.handleExceptions(error)
+       this.commonServices.handleExceptions(error)
     }
   }
 
@@ -120,7 +122,7 @@ export class WorkiisService {
 
     } catch (error) {
 
-      this.handleExceptions(error)
+      this.commonServices.handleExceptions(error)
       
     }
 
@@ -144,13 +146,4 @@ export class WorkiisService {
     //this.workiis = workii;
 }
 
-  private handleExceptions(error: IErrorsTypeORM) {
-
-  if(error.code === '23505')
-      throw new BadRequestException(error.detail);
-
-      this.logger.error(error)
-      //console.log(error);
-      throw new InternalServerErrorException('Unexpected error, check server logs')
-  }
 }

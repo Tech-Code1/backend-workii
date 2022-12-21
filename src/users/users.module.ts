@@ -6,11 +6,13 @@ import { AuthService } from '../auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { User } from './users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonService } from 'src/common/common.service';
 
 @Module({
   controllers: [UsersController],
   providers: [
     UsersService,
+    CommonService
   ],
   exports: [
     UsersService

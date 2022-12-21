@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
 import { User } from './users.entity';
 import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
+import { CommonService } from 'src/common/common.service';
 
 
 @Injectable()
@@ -20,7 +21,8 @@ export class UsersService {
     constructor(
         private authService: AuthService,
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>   
+        private readonly userRepository: Repository<User>,
+        private readonly commonServices: CommonService   
         ) {}
 
     async create({password, email, ...users}: UserDto) {
@@ -40,18 +42,20 @@ export class UsersService {
                     timeOfCreation: new Date().getTime()
                 }
             )
+      
+                console.log(this.authService.otpTime);
+                
+                await this.userRepository.save(user)
+                return user;
 
-            await this.userRepository.save(user)
+        }
 
-            return user;
+        throw new BadRequestException("El código OTP es erroneo o no es valido");
 
-            }
-
-            throw new BadRequestException("El código OTP es erroneo o no es valido");
 
         } catch (error) {
 
-            this.handleExceptions(error)
+            this.commonServices.handleExceptions(error)
 
         }
     }
@@ -127,15 +131,5 @@ export class UsersService {
     /* no production */
     fillUsersWithSeedData(user: IUser[]){
         //this.users = user;
-    }
-
-    private handleExceptions(error: IErrorsTypeORM) {
-
-    if(error.code === '23505')
-        throw new BadRequestException(error.detail);
-    
-        this.logger.error(error)
-        //console.log(error);
-        throw new InternalServerErrorException('Unexpected error, check server logs')
     }
 }

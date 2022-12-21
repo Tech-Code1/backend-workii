@@ -8,6 +8,7 @@ export class AuthService {
     private otp: string = ""
     otpExpirationStart: number;
     otpIsValid: boolean = false;
+    otpTime: number;
 
     constructor() {
     }
@@ -39,11 +40,25 @@ export class AuthService {
        if (otpEntry === this.otp ) {
 
         console.log("El Otp coincide");
-        const secondsElapsed = (Date.now() - this.otpExpirationStart) / 1000;
+        const secondsElapsed = Math.floor((Date.now() - this.otpExpirationStart) / 1000);
 
-        console.log(secondsElapsed);
+        this.otpTime = secondsElapsed;
+
+        console.log(this.otpTime);
         
-        return secondsElapsed > 120
+
+        const interval = setInterval(() => {
+        this.otpTime += 1;
+        console.log(this.otpTime);
+            if (this.otpTime > 120) {
+                this.otpIsValid = false
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        
+        
+        return this.otpTime >= 120
             ? this.otpIsValid = false 
             : this.otpIsValid = true
 
