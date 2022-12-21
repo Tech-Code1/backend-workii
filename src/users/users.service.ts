@@ -30,6 +30,7 @@ export class UsersService {
         const hashedPassword = await this.authService.hashPassword(password);
 
         try {
+            if(this.authService.otpIsValid) {
             const user = this.userRepository.create(
                 {
                     id: uuidv4(),
@@ -41,7 +42,12 @@ export class UsersService {
             )
 
             await this.userRepository.save(user)
+
             return user;
+
+            }
+
+            throw new BadRequestException("El código OTP es erroneo o no es valido");
 
         } catch (error) {
 

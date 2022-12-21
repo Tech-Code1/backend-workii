@@ -7,6 +7,7 @@ export class AuthService {
     private readonly characters: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private otp: string = ""
     otpExpirationStart: number;
+    otpIsValid: boolean = false;
 
     constructor() {
     }
@@ -30,21 +31,24 @@ export class AuthService {
         //console.log(this.otp);
 
         if(otpEntry === "" || !this.otp) {
+            this.otpIsValid = false;
+
             throw new NotFoundException("El OTP es invalido, genera otro para poder acceder");
         }
         
        if (otpEntry === this.otp ) {
+
         console.log("El Otp coincide");
         const secondsElapsed = (Date.now() - this.otpExpirationStart) / 1000;
 
         console.log(secondsElapsed);
         
         return secondsElapsed > 120
-            ? false
-            : true
+            ? this.otpIsValid = false 
+            : this.otpIsValid = true
 
         } else {
-            
+            this.otpIsValid = false;
             throw new NotFoundException("El OTP es erroneo");
         }
     }
