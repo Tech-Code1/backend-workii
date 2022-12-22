@@ -48,7 +48,7 @@ export class Workii {
 
     @ManyToOne(
       () => User,
-      (user: User) => user.workiis
+      (user: User) => user.workiis,
     )
     user: User
 }

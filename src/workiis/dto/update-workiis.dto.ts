@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsIn, IsNumber, IsOptional, IsPositive, IsString, Matches, Max, MaxLength, Min, MinLength, validate } from 'class-validator';
-import { CreateWikiiDto } from './create-workiis.dto';
+import { CreateWorkiiDto } from './create-workiis.dto';
 
-export class UpdateWikiiDto extends PartialType(CreateWikiiDto) {
+export class UpdateWikiiDto extends PartialType(CreateWorkiiDto) {
 
   @ApiProperty()
   @MaxLength(150, { message: "El campo excede el número de caracteres permitidos"})

@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsIn, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsIn, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Max, MaxLength, Min, MinLength } from "class-validator";
+import { User } from "src/users/users.entity";
 
-export class CreateWikiiDto {
+export class CreateWorkiiDto {
 
     @ApiProperty()
     @MaxLength(150, { message: "El campo excede el número de caracteres permitidos"})
@@ -58,6 +59,10 @@ export class CreateWikiiDto {
     @IsOptional()
     @IsIn(['Busqueda', 'Eligiendo', 'Iniciado', 'Finalizado'])
     status?: string;
+
+    @IsString()
+    @IsUUID()
+    userId: string;
 
     @ApiProperty()
     @Min(3, { message: "El tiempo minimo para cumplir la tarea es de 3 días"})

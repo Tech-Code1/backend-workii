@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common/pipes';
-import { CreateWikiiDto } from './dto/create-workiis.dto';
+import { CreateWorkiiDto } from './dto/create-workiis.dto';
 import { UpdateWikiiDto } from './dto/update-workiis.dto';
 import { WorkiisService } from './workiis.service';
 import { PaginationDto } from '../common/DTOs/pagination.dto';
@@ -10,7 +10,7 @@ export class WorkiisController {
   constructor(private readonly workiisService: WorkiisService) {}
 
   @Post()
-  create(@Body() createWikiiDto: CreateWikiiDto) {
+  create(@Body() createWikiiDto: CreateWorkiiDto) {
     return this.workiisService.create(createWikiiDto);
   }
 

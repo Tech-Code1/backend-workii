@@ -31,6 +31,7 @@ export class User {
     @OneToMany(
         () => Workii,
         (workii: Workii) => workii.user,
+        {eager: true}
     )
     workiis?: Workii[]
 }

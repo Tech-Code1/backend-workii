@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Workii } from '../workiis/entities/workiis.entity';
-import { CreateWikiiDto } from '../workiis/dto/create-workiis.dto';
+import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { Url } from 'src/url/url.entity';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/common.service';
+import { User } from 'src/users/users.entity';
 
 
 @Injectable()
@@ -23,16 +24,22 @@ export class WorkiisService {
   constructor(
     @InjectRepository(Workii)
     private readonly workiiRepository: Repository<Workii>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly commonServices: CommonService
     /* @InjectRepository(Url)
     private readonly urlRepository: Repository<Url> */
   ){}
 
-  async create(createWikiiDto: CreateWikiiDto) {
-
-    let {name, executionTime, ...restData} = createWikiiDto
+  async create({name, executionTime, userId, ...restData}: CreateWorkiiDto) {
 
     try {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    
+    if (!user) {
+      throw new Error(`El usuario con id ${userId} no fue encontrado`);
+    }
+  
       const workii = this.workiiRepository.create(
         {
           id: uuidv4(),
@@ -41,11 +48,21 @@ export class WorkiisService {
           slug: nanoid(10),
           status: 'Busqueda',
           executionTime: 3,
-          timeOfCreation: new Date().getTime()
+          timeOfCreation: new Date().getTime(),
+          user: user,
         }
       );
+
       await this.workiiRepository.save(workii);
-      return workii;
+
+      const result = await this.workiiRepository
+      .createQueryBuilder('workii')
+      .where('workii.id = :id', { id: workii.id })
+      .leftJoinAndSelect('workii.user', 'user')
+      .select(['workii', 'user.id'])
+      .getOne();
+
+      return result;
       
     } catch (error) {
       
@@ -71,22 +88,22 @@ export class WorkiisService {
     throw new NotFoundException("Los días ingresados son invalidos");
 } */
 
-  //TODO: pagination
   findAll(paginationDto: PaginationDto) {
     const { limit= 10, offset= 0 } = paginationDto
-
-    //console.log(paginationDto);
-    return this.workiiRepository.find({
-      take: limit,
-      skip: offset
-      // TODO: relaciones
-    });
+    
+    return this.workiiRepository
+    .createQueryBuilder('workii')
+    .leftJoinAndSelect('workii.user', 'user')
+    .select(['workii', 'user.id'])
+    .take(limit)
+    .skip(offset)
+    .getMany()
   }
-
+  
   async findOne(code: string) {
-
+    
     let workii: Workii | null;
-
+    
     if(IsUUID(code)) {
       workii = await this.workiiRepository.findOneBy({ id: code })
 
@@ -102,7 +119,13 @@ export class WorkiisService {
     if (!workii) 
     throw new NotFoundException(`El workii con el id ${code} no fue encontrado`)
 
-    return workii
+    const result = await this.workiiRepository
+      .createQueryBuilder('workii')
+      .leftJoinAndSelect('workii.user', 'user')
+      .select(['workii', 'user.id'])
+      .getOne();
+
+    return result
   }
 
   async update(id: string, updateWikiiDto: UpdateWikiiDto) {

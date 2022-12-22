@@ -11,6 +11,7 @@ import { CommonService } from 'src/common/common.service';
 import { CreateUserDto } from './DTOs/create-user.dto';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
+import { validate as IsUUID } from 'uuid';
 
 
 @Injectable()
@@ -68,11 +69,20 @@ export class UsersService {
     }
 
 
-    getUserById(id: string) {
-        /* const user = this.users.find(user => user.id);
-        if(!user) throw new NotFoundException(`El usuario con el siguiente id: ${id} no se ha encontrado`);
+    async getUserById(id: string) {
+        let user: User | null;
 
-        return user */
+        if(IsUUID(id)) {
+        user = await this.userRepository.findOneBy({ id: id })
+
+        
+
+        if (!user) 
+        throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+
+        return user
+
+        } 
     }
 
 
