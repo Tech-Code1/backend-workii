@@ -9,6 +9,7 @@ import { WorkiisModule } from './workiis/workiis.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 //import { UrlModule } from './url/url.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommonModule } from './common/common.module';
       synchronize: true,
     }),
     CommonModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],

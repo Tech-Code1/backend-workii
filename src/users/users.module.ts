@@ -6,14 +6,16 @@ import { AuthService } from '../auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { User } from './users.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommonService } from 'src/common/common.service';
+import { CommonService } from 'src/common/services/handleExceptions.service';
 import { Workii } from '../workiis/entities/workiis.entity';
+import { FileInterceptorService } from 'src/common/services/uploadFiles.service';
 
 @Module({
   controllers: [UsersController],
   providers: [
     UsersService,
-    CommonService
+    CommonService,
+    FileInterceptorService
   ],
   exports: [
     UsersService

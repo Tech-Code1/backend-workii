@@ -7,11 +7,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
 import { User } from './users.entity';
-import { CommonService } from 'src/common/common.service';
+import { CommonService } from 'src/common/services/handleExceptions.service';
 import { CreateUserDto } from './DTOs/create-user.dto';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { validate as IsUUID } from 'uuid';
+import { FileInterceptorService } from 'src/common/services/uploadFiles.service';
+import { fileNamer } from '../common/helpers/fileNamer.helper';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
 
 @Injectable()
@@ -27,17 +31,31 @@ export class UsersService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(Workii)
         private readonly workiiRepository: Repository<Workii>,
-        private readonly commonServices: CommonService   
+        private readonly commonServices: CommonService,
+        private readonly fileInterceptorService: FileInterceptorService  
         ) {}
 
-    async create({password, email, workiis = [], ...usersDetails}: CreateUserDto) {
+    async create({password, email, avatar, workiis = [], ...usersDetails}: CreateUserDto, file: Express.Multer.File) {
         
         password = this.password
 
+        if(!file) {
+            throw new BadRequestException('Make sure that the file is a image')
+        }
+        
+        //TODO: Cambiar endpoint de las imagenes (Se deberian subir a la nube)
+        avatar = join(__dirname, '../../static/avatars', file.filename);
+    
+        if( !existsSync(avatar) ) {
+          throw new BadRequestException(`Not product found with image ${file.filename}`);
+        }
+
+        console.log(avatar);
+        
         const hashedPassword = await this.authService.hashPassword(password);
 
         try {
-            if(this.authService.otpIsValid) {
+            if(password && email) {
             const user = this.userRepository.create(
                 {
                     id: uuidv4(),
@@ -47,6 +65,7 @@ export class UsersService {
                     workiis: workiis.map((workii: Workii) => {
                        return this.workiiRepository.create(workii)
                     }),
+                    avatar,
                     timeOfCreation: new Date().getTime()
                 }
             )

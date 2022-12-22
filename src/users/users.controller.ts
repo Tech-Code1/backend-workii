@@ -1,9 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { UpdateUserDto, CreateUserDto } from './DTOs/index.dto';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { fileFilter } from 'src/common/helpers/fileFilter.helper';
+import { diskStorage } from 'multer';
+import { fileNamer } from 'src/common/helpers';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -26,10 +30,19 @@ export class UsersController {
 
 
     @Post()
-    async createUser(@Body() userRegister: CreateUserDto) {  
+    @UseInterceptors( FileInterceptor('file', {
+        fileFilter: fileFilter,
+        limits: { fileSize: 1000000},
+        storage: diskStorage({
+          destination: './static/avatars',
+          filename: fileNamer
+        })
+    }) )
+    async createUser(@Body() userRegister: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
     
-        //console.log(id);
-        return this.usersService.create(userRegister)
+    
+        console.log(file);
+        return this.usersService.create(userRegister, file)
     }
 
     @Patch(':id') 

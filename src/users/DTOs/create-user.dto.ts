@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional } from 'class-validator';
 import { Workii } from 'src/workiis/entities/workiis.entity';
+import { UploadedFile } from '@nestjs/common';
 
 export class CreateUserDto {
 
@@ -19,11 +20,12 @@ export class CreateUserDto {
     @IsOptional()
     readonly password?: string;
     
-    @ApiProperty()
+    @ApiProperty({ type: 'string', format: 'binary' })
     @MinLength(5, { message:"El campo debe tener por lo menos 5 caracteres" })
     @MaxLength(200, { message: "El campo excede el número de caracteres permitidos"})
     @IsString({message: `El recurso del avatar debe ser un string`})
-    readonly avatar: string;
+    @IsOptional()
+    readonly avatar?: string;
 
     @ApiProperty()
     @MinLength(3, { message:"El campo debe tener por lo menos 3 caracteres" })

@@ -10,7 +10,7 @@ import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { Url } from 'src/url/url.entity';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
-import { CommonService } from '../common/common.service';
+import { CommonService } from '../common/services/handleExceptions.service';
 import { User } from 'src/users/users.entity';
 
 

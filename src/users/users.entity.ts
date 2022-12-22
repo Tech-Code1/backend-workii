@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
 import { Workii } from '../workiis/entities/workiis.entity';
 
-@Entity()
+@Entity({ name: 'users' })
 export class User {
 
     @PrimaryGeneratedColumn('uuid')
@@ -31,7 +31,7 @@ export class User {
     @OneToMany(
         () => Workii,
         (workii: Workii) => workii.user,
-        {eager: true}
+        {eager: true, onDelete: 'CASCADE'}
     )
     workiis?: Workii[]
 }

@@ -5,7 +5,7 @@ import { Url } from '../../url/url.entity'
 import { User } from '../../users/users.entity';
 
 let counter = 1;
-@Entity()
+@Entity({ name: 'workiis' })
 export class Workii {
 
     @PrimaryGeneratedColumn('uuid')

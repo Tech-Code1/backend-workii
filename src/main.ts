@@ -2,10 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function main() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('main');
 
   const options = new DocumentBuilder() 
     .setTitle('Workii REST API')
@@ -26,7 +27,9 @@ async function main() {
 
   app.setGlobalPrefix('api');
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
+  logger.log(`App running on port ${process.env.PORT || 3000}`);
+  
 }
 
 main();
