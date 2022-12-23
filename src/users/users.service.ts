@@ -15,6 +15,7 @@ import { CreateUserDto } from './DTOs/create-user.dto';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { validate as IsUUID } from 'uuid';
+import { JwtService } from '@nestjs/jwt';
 
 
 
@@ -30,6 +31,7 @@ export class UsersService {
         @InjectRepository(Workii)
         private readonly workiiRepository: Repository<Workii>,
         private readonly commonServices: CommonService,
+        private readonly jwtService: JwtService
         //private readonly fileInterceptorService: FileInterceptorService  
         ) {}
 
@@ -70,7 +72,7 @@ export class UsersService {
                 await this.userRepository.save(user)
                 this.authService.otpIsValid = false
 
-                return {...user, workiis};
+                return {...user, workiis, token: this.authService.getJwtToken( {email: user!.email} )};
 
         }
 

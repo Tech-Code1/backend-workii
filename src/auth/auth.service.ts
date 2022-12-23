@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { hashSync, compare } from 'bcrypt';
-import { runInThisContext } from 'vm';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { hashSync } from 'bcrypt';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from 'src/auth/DTOs/login-user.dto';
 import { User } from 'src/users/users.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
+import { IJwtPaypload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +24,7 @@ export class AuthService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        private readonly jwtService: JwtService
     ) {
     }
 
@@ -85,7 +88,7 @@ export class AuthService {
     }
 
 
-    async login({email, password}: LoginUserDto): Promise<User | null>  {
+    async login({email, password}: LoginUserDto): Promise<any>  {
 
         this.email = email!.trim().toLocaleLowerCase();       
         this.password = password!;
@@ -99,8 +102,9 @@ export class AuthService {
         
         if(!user) {
 
-            console.log("El usuario no existe");
-            //await this.sendOtpEmail(this.email)
+            await this.sendOtpEmail(this.email)
+            console.log("El OTP se le ha enviado");
+            return;
         } 
 
         if(!bcrypt.compareSync(this.password, user!.password)) {
@@ -108,7 +112,10 @@ export class AuthService {
             throw new UnauthorizedException('Las credenciales no son validas')
         }
        
-        return user
+        return {
+            ...user,
+            token: this.getJwtToken( {email: user!.email} )
+        }
     }
 
     async sendOtpEmail(email: string): Promise<void> {
@@ -137,5 +144,11 @@ export class AuthService {
                     console.log(`Correo electronico enviado a: ${this.email}`);
                 }
             });
+    }
+
+    getJwtToken(payload: IJwtPaypload): string {
+
+        return this.jwtService.sign(payload);
+
     }
 }
