@@ -1,28 +1,26 @@
-import { Injectable, ParseIntPipe, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { join } from 'path';
+import { existsSync } from 'fs';
+
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from './interfaces/user.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateUserDto } from './DTOs/index.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as nodemailer from "nodemailer";
 import { User } from './users.entity';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { CreateUserDto } from './DTOs/create-user.dto';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { validate as IsUUID } from 'uuid';
-import { FileInterceptorService } from 'src/common/services/uploadFiles.service';
-import { fileNamer } from '../common/helpers/fileNamer.helper';
-import { join } from 'path';
-import { existsSync } from 'fs';
+
 
 
 @Injectable()
 export class UsersService {
-
-    email: string;
-    password: string;
+   
     private readonly logger = new Logger('UsersService');
 
     constructor(
@@ -32,12 +30,13 @@ export class UsersService {
         @InjectRepository(Workii)
         private readonly workiiRepository: Repository<Workii>,
         private readonly commonServices: CommonService,
-        private readonly fileInterceptorService: FileInterceptorService  
+        //private readonly fileInterceptorService: FileInterceptorService  
         ) {}
 
     async create({password, email, avatar, workiis = [], ...usersDetails}: CreateUserDto, file: Express.Multer.File) {
         
-        password = this.password
+        password = this.authService.password
+        email = this.authService.email
 
         if(!file) {
             throw new BadRequestException('Make sure that the file is a image')
@@ -49,18 +48,16 @@ export class UsersService {
         if( !existsSync(avatar) ) {
           throw new BadRequestException(`Not product found with image ${file.filename}`);
         }
-
-        console.log(avatar);
         
         const hashedPassword = await this.authService.hashPassword(password);
 
         try {
-            if(password && email) {
+            if(password && email && this.authService.otpMatch) {
             const user = this.userRepository.create(
                 {
                     id: uuidv4(),
                     password: hashedPassword,
-                    email: this.email,
+                    email,
                     ...usersDetails,
                     workiis: workiis.map((workii: Workii) => {
                        return this.workiiRepository.create(workii)
@@ -69,15 +66,15 @@ export class UsersService {
                     timeOfCreation: new Date().getTime()
                 }
             )
-      
-                console.log(this.authService.otpTime);
-                
+
                 await this.userRepository.save(user)
+                this.authService.otpIsValid = false
+
                 return {...user, workiis};
 
         }
 
-        throw new BadRequestException("El código OTP es erroneo o no es valido");
+        throw new BadRequestException("Debes de ingresar tu correo y contraseña antes, o el OTP es erroneo");
 
 
         } catch (error) {
@@ -87,14 +84,11 @@ export class UsersService {
         }
     }
 
-
     async getUserById(id: string) {
         let user: User | null;
 
         if(IsUUID(id)) {
         user = await this.userRepository.findOneBy({ id: id })
-
-        
 
         if (!user) 
         throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
@@ -104,11 +98,9 @@ export class UsersService {
         } 
     }
 
-
     getAll(paginationDto: PaginationDto) {
         const { limit= 10, offset= 0 } = paginationDto
 
-        //console.log(paginationDto);
         return this.userRepository.find({
         take: limit,
         skip: offset,
@@ -117,7 +109,6 @@ export class UsersService {
         }
         });
     }
-
 
     async update(id: string, updateUserDto: UpdateUserDto) {
 
@@ -142,42 +133,9 @@ export class UsersService {
           }
     }
 
-
     delete(id: string) {
         /* const user = this.getUserById(id);
         this.users = this.users.filter(user => user.id !== id); */
-    }
-
-
-    async sendOtpByEmail(email: string, password: string): Promise<void | string>  {
-
-        this.email = email.trim().toLocaleLowerCase();       
-        this.password = password;
-
-            const otp = this.authService.createOtp();
-            const config = {
-            service: "gmail",
-            auth: {
-                user: process.env.NODEMAILER_USER,
-                pass: process.env.PASS_GMAIL,
-            },
-            }
-    
-            const mailOptions = {
-            from: process.env.NODEMAILER_USER,
-            to: this.email,
-            subject: "Contraseña para crear una cuenta en Workii",
-            html: `<h1>Your one-time password is: ${otp}</h1>`,
-            };
-    
-            const transporter = nodemailer.createTransport(config);
-            await transporter.sendMail(mailOptions, (err) => {
-                if(err) {
-                    throw new NotFoundException("No se a podido enviar el correo, algo inesperado a pasado");
-                } else {
-                    console.log(`Correo electronico enviado a: ${this.email}`);
-                }
-            });
     }
 
     /* no production */

@@ -7,10 +7,12 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('text')
+    @Column('text', {
+        unique: true,
+    })
     email: string;
 
-    @Column('text')
+    @Column('text', {select: false})
     password: string
 
     @Column('text')
@@ -25,13 +27,19 @@ export class User {
     @Column('text', {array: true})
     profession: string[];
 
+    @Column('bool', {default: true})
+    isActive: boolean;
+
+    @Column('text', {array: true, default: ['user']})
+    roles: string[]
+
     @Column('numeric', {name: 'time_of_creation'})
     timeOfCreation: number;
 
     @OneToMany(
         () => Workii,
         (workii: Workii) => workii.user,
-        {eager: true, onDelete: 'CASCADE'}
+        {eager: true}
     )
     workiis?: Workii[]
 }

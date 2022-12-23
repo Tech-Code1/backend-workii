@@ -8,6 +8,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter } from 'src/common/helpers/fileFilter.helper';
 import { diskStorage } from 'multer';
 import { fileNamer } from 'src/common/helpers';
+import { LoginUserDto } from '../auth/DTOs/login-user.dto';
+import { User } from './users.entity';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -29,7 +31,7 @@ export class UsersController {
     }
 
 
-    @Post()
+    @Post('register')
     @UseInterceptors( FileInterceptor('file', {
         fileFilter: fileFilter,
         limits: { fileSize: 1000000},
@@ -40,8 +42,6 @@ export class UsersController {
     }) )
     async createUser(@Body() userRegister: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
     
-    
-        console.log(file);
         return this.usersService.create(userRegister, file)
     }
 
@@ -56,10 +56,5 @@ export class UsersController {
     @Delete(':id') 
     deleteUser(@Param('id', ParseUUIDPipe) id: string) {
         return this.usersService.delete(id)
-    }
-
-    @Post("send/otp")
-    async sendPassword(@Body() body: {email: string, password: string}): Promise<void> {
-      this.usersService.sendOtpByEmail(body.email, body.password)
     }
 }

@@ -1,16 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { hash, compare } from 'bcrypt';
-import { loginUserDto } from './DTOs/login.dto';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { hashSync, compare } from 'bcrypt';
+import { runInThisContext } from 'vm';
+import * as bcrypt from 'bcrypt';
+import { LoginUserDto } from 'src/auth/DTOs/login-user.dto';
+import { User } from 'src/users/users.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as nodemailer from "nodemailer";
 
 @Injectable()
 export class AuthService {
     private readonly characters: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private otp: string = ""
+    email: string;
+    password: string;
     otpExpirationStart: number;
     otpIsValid: boolean = false;
     otpTime: number;
+    otpMatch: boolean = false;
 
-    constructor() {
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+    ) {
     }
 
     createOtp(): string {
@@ -22,16 +34,18 @@ export class AuthService {
           });
 
           this.otpExpirationStart  = Date.now();
+          this.otpIsValid = true
 
-          return this.otp = words.join("-");      
+          return this.otp = words.join("-");
+          
     }
-
 
     validateTimePassword(otpEntry: string): boolean {
 
         //console.log(this.otp);
 
         if(otpEntry === "" || !this.otp) {
+            this.otpMatch = false
             this.otpIsValid = false;
 
             throw new NotFoundException("El OTP es invalido, genera otro para poder acceder");
@@ -39,24 +53,21 @@ export class AuthService {
         
        if (otpEntry === this.otp ) {
 
+        this.otpMatch = true
         console.log("El Otp coincide");
         const secondsElapsed = Math.floor((Date.now() - this.otpExpirationStart) / 1000);
 
         this.otpTime = secondsElapsed;
 
-        console.log(this.otpTime);
-        
+        console.log(this.otpTime);       
 
         const interval = setInterval(() => {
         this.otpTime += 1;
         console.log(this.otpTime);
-            if (this.otpTime > 120) {
-                this.otpIsValid = false
+            if (this.otpTime > 120 || this.otpIsValid === false) {
                 clearInterval(interval);
             }
         }, 1000);
-
-        
         
         return this.otpTime >= 120
             ? this.otpIsValid = false 
@@ -69,26 +80,62 @@ export class AuthService {
     }
 
     async hashPassword( password: string) {
-        const plainToHash = await hash(password, 10);
+        const plainToHash = hashSync(password, 10);
         return password = plainToHash
     }
 
-    async login({email, password}: loginUserDto) {
-        /* const findUser = await this.userModel.findOne({email})
 
-        if(!findUser) throw new HttpException('USER_NOT_FOUND', 404);
+    async login({email, password}: LoginUserDto): Promise<User | null>  {
 
-        const checkPassword = await compare(password, findUser.password);
+        this.email = email!.trim().toLocaleLowerCase();       
+        this.password = password!;
 
-        if(!checkPassword) throw new HttpException('PASSWORD_INVALID', 403);
+        const user = await this.userRepository
+        .createQueryBuilder("user")
+        .where("user.email = :email", {email})
+        .select(["user.email", "user.password"])
+        .getOne()
+        
+        
+        if(!user) {
 
-        const payload = {id: findUser.id, nick:findUser.nick}
-        const token = this.jwtService.sign(payload)
-        const data = {
-            user: findUser,
-            token
-        };
+            console.log("El usuario no existe");
+            //await this.sendOtpEmail(this.email)
+        } 
 
-        return data */
+        if(!bcrypt.compareSync(this.password, user!.password)) {
+
+            throw new UnauthorizedException('Las credenciales no son validas')
+        }
+       
+        return user
+    }
+
+    async sendOtpEmail(email: string): Promise<void> {
+
+        const otp = this.createOtp();
+            const config = {
+            service: "gmail",
+            auth: {
+                user: process.env.NODEMAILER_USER,
+                pass: process.env.PASS_GMAIL,
+            },
+            }
+    
+            const mailOptions = {
+            from: process.env.NODEMAILER_USER,
+            to: email,
+            subject: "Contraseña para crear una cuenta en Workii",
+            html: `<h1>Your one-time password is: ${otp}</h1>`,
+            };
+    
+            const transporter = nodemailer.createTransport(config);
+            await transporter.sendMail(mailOptions, (err) => {
+                if(err) {
+                    throw new NotFoundException("No se a podido enviar el correo, algo inesperado a pasado");
+                } else {
+                    console.log(`Correo electronico enviado a: ${this.email}`);
+                }
+            });
     }
 }

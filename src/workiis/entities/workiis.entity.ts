@@ -50,6 +50,6 @@ export class Workii {
       () => User,
       (user: User) => user.workiis,
     )
-    user: User
+    user?: User
 }
 

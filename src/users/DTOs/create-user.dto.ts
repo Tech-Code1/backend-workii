@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional } from 'class-validator';
+import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional, Matches } from 'class-validator';
 import { Workii } from 'src/workiis/entities/workiis.entity';
 import { UploadedFile } from '@nestjs/common';
 
