@@ -4,8 +4,11 @@ import { CreateWorkiiDto } from './dto/create-workiis.dto';
 import { UpdateWikiiDto } from './dto/update-workiis.dto';
 import { WorkiisService } from './workiis.service';
 import { PaginationDto } from '../common/DTOs/pagination.dto';
+import { Auth } from 'src/auth/decorators/index.decorator';
+import { EValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 
 @Controller('workiis')
+@Auth(EValidRoles.user)
 export class WorkiisController {
   constructor(private readonly workiisService: WorkiisService) {}
 

@@ -96,7 +96,7 @@ export class AuthService {
         const user = await this.userRepository
         .createQueryBuilder("user")
         .where("user.email = :email", {email})
-        .select(["user.email", "user.password"])
+        .select(["user.email", "user.password", "user.id"])
         .getOne()
         
         
@@ -114,7 +114,7 @@ export class AuthService {
        
         return {
             ...user,
-            token: this.getJwtToken( {email: user.email} )
+            token: this.getJwtToken( {id: user.id} )
         }
     }
 
@@ -144,6 +144,14 @@ export class AuthService {
                     console.log(`Correo electronico enviado a: ${this.email}`);
                 }
             });
+    }
+
+    async checkAuthStatus(user: User) {
+
+        return {
+            ...user,
+            token: this.getJwtToken({id: user.id})
+        }
     }
 
      getJwtToken(payload: IJwtPaypload): string {

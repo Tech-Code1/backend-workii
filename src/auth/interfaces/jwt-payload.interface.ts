@@ -1,3 +1,3 @@
 export interface IJwtPaypload {
-    email: string;
+    id: string;
 }

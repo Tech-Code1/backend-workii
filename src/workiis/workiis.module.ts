@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Workii } from './entities/workiis.entity';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { User } from '../users/users.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [WorkiisController],
@@ -13,7 +14,8 @@ import { User } from '../users/users.entity';
     WorkiisService
   ],
   imports: [
-    TypeOrmModule.forFeature([Workii, User])
+    TypeOrmModule.forFeature([Workii, User]),
+    AuthModule,  
   ]
 })
 export class WorkiisModule {}
