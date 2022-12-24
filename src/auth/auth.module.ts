@@ -15,7 +15,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
     JwtModule.registerAsync({
       
-      useFactory: () => {
+      useFactory: async () => {
           return {
             secret: process.env.JWT_SECRET,
             signOptions: {

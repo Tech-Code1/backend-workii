@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { ApiTags } from "@nestjs/swagger";
 import { LoginUserDto } from "src/auth/DTOs/login-user.dto";
 import { User } from "src/users/users.entity";
@@ -24,5 +25,15 @@ export class AuthController {
     async loginUser(@Body() loginUserDto: LoginUserDto): Promise<User| null> {
     
       return await this.authService.login(loginUserDto)
+  }
+
+  @Get('private')
+  @UseGuards( AuthGuard() )
+  testingPrivateRoute() {
+    return {
+      ok: true,
+      message: 'Hola Mundo Private'
     }
+  }
+  
 }

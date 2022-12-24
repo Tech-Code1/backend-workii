@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { FileInterceptorService } from 'src/common/services/uploadFiles.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [UsersController],
@@ -22,7 +23,8 @@ import { FileInterceptorService } from 'src/common/services/uploadFiles.service'
   ],
   imports: [
     TypeOrmModule.forFeature([User, Workii]),
-    AuthModule
+    AuthModule,
+    JwtModule
   ]
 })
 export class UsersModule {}

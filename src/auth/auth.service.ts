@@ -114,7 +114,7 @@ export class AuthService {
        
         return {
             ...user,
-            token: this.getJwtToken( {email: user!.email} )
+            token: this.getJwtToken( {email: user.email} )
         }
     }
 
@@ -146,9 +146,10 @@ export class AuthService {
             });
     }
 
-    getJwtToken(payload: IJwtPaypload): string {
+     getJwtToken(payload: IJwtPaypload): string {
 
-        return this.jwtService.sign(payload);
-
+         const token = this.jwtService.sign(payload);
+         
+         return token;
     }
 }

@@ -5,7 +5,6 @@ import { User } from '../../users/users.entity';
 import { IJwtPaypload } from "../interfaces/jwt-payload.interface";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
-import { jwtConstants } from "../jwt.constants";
 
 
 @Injectable()
@@ -16,12 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignorateExpiration: false,
             secretOrKey: process.env.JWT_SECRET,
         })
     }
 
-    async Validate({email}: IJwtPaypload): Promise<User> {
+    async validate({email}: IJwtPaypload): Promise<User> {
 
         const user = await this.userRepository.findOneBy({email})
 
@@ -29,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             throw new UnauthorizedException("El token no es valido")
         }
 
-        if(user.isActive) {
+        if(!user.isActive) {
             throw new UnauthorizedException('El usuario esta inactivo, debes hablar con soporte')
         }
 

@@ -72,7 +72,7 @@ export class UsersService {
                 await this.userRepository.save(user)
                 this.authService.otpIsValid = false
 
-                return {...user, workiis, token: this.authService.getJwtToken( {email: user!.email} )};
+                return {...user, workiis, token: this.authService.getJwtToken( {email: user.email} )};
 
         }
 
