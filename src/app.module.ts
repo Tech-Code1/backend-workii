@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 //import { UrlModule } from './url/url.module';
 import { FilesModule } from './files/files.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FilesModule } from './files/files.module';
     }),
     CommonModule,
     FilesModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
