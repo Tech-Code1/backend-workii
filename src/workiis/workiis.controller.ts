@@ -6,13 +6,19 @@ import { WorkiisService } from './workiis.service';
 import { PaginationDto } from '../common/DTOs/pagination.dto';
 import { Auth } from 'src/auth/decorators/index.decorator';
 import { EValidRoles } from 'src/auth/interfaces/valid-roles.interface';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Workii } from './entities/workiis.entity';
 
 @Controller('workiis')
+@ApiTags('workiis')
 @Auth(EValidRoles.user)
 export class WorkiisController {
   constructor(private readonly workiisService: WorkiisService) {}
 
   @Post()
+  @ApiResponse({status: 201, description: 'Workii was created successfully', type: Workii})
+  @ApiResponse({status: 400, description: 'Bad request'})
+  @ApiResponse({status: 403, description: 'Forbiden. Token related'})
   create(@Body() createWikiiDto: CreateWorkiiDto) {
     return this.workiisService.create(createWikiiDto);
   }

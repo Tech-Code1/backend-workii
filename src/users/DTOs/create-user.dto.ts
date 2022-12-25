@@ -2,10 +2,17 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsArray, MinLength, MaxLength, IsEmail, IsUUID, IsOptional, Matches } from 'class-validator';
 import { Workii } from 'src/workiis/entities/workiis.entity';
 import { UploadedFile } from '@nestjs/common';
+import { Etarget } from 'src/workiis/interfaces/target.interface';
+import { EProfession } from '../interfaces/profession.interface';
 
 export class CreateUserDto {
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Correo del usuario',
+        uniqueItems: true,
+        required: true,
+        nullable: false,
+    })
     @IsEmail({ message: "El correo debe ser valido"})
     @MinLength(5, { message:"El campo debe tener por lo menos 5 caracteres" })
     @MaxLength(100, { message: "El campo excede el número de caracteres permitidos"})
@@ -13,35 +20,69 @@ export class CreateUserDto {
     @IsOptional()
     readonly email?: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Contraseña del usuario',
+        uniqueItems: false,
+        required: true,
+        nullable: false,
+    })
     @MinLength(6, { message:"El campo debe tener por lo menos 6 caracteres" })
     @MaxLength(50, { message: "El campo excede el número de caracteres permitidos"})
     @IsString({message: `El password debe ser un string`})
     @IsOptional()
     readonly password?: string;
     
-    @ApiProperty({ type: 'string', format: 'binary' })
+    @ApiProperty({
+        description: 'Avatar del usuario',
+        uniqueItems: false,
+        required: true,
+        format: 'binary',
+        nullable: false,
+    })
     @MinLength(5, { message:"El campo debe tener por lo menos 5 caracteres" })
     @MaxLength(200, { message: "El campo excede el número de caracteres permitidos"})
     @IsString({message: `El recurso del avatar debe ser un string`})
     @IsOptional()
     readonly avatar?: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Apodo del usuario',
+        uniqueItems: true,
+        required: true,
+        nullable: false,
+    })
     @MinLength(3, { message:"El campo debe tener por lo menos 3 caracteres" })
     @MaxLength(30, { message: "El campo excede el número de caracteres permitidos"})
     @IsString({message: `El nick debe ser un string`})
     readonly nick: string;
 
+    @ApiProperty({
+        description: 'Area en el que se especializa el usuario',
+        uniqueItems: false,
+        required: true,
+        enum: Etarget,
+        nullable: false,
+    })
     @IsArray({message: `El área de expertis debe ser un array de strings`})
-    @ApiProperty({enum: ['Diseño', 'Arte' , 'Computación', 'Medicina', 'Entretenimiento', 'Comunicación']})
     readonly areaOfExpertise: string[] = [];
 
+    @ApiProperty({
+        description: 'Profesion del usuario',
+        uniqueItems: false,
+        required: true,
+        enum: EProfession,
+        nullable: false,
+    })
     @IsArray({message: `La profesión debe ser un array de strings`})
-    @ApiProperty({enum: ['programador', 'Veterinario', 'Bioquimico', 'Profesor/ra']})
     readonly profession: string[] = [];
 
-    @ApiProperty()
-    @IsArray({message: `Los workiis deben ser un array de strings`})
+    @ApiProperty({
+        description: 'Workiis creados por el usuario',
+        uniqueItems: false,
+        default: [],
+        required: false,
+        nullable: true,
+    })
+    @IsArray({message: `El workii tiene un formato erroneo`})
     readonly workiis?: Workii[] = [];
 }
