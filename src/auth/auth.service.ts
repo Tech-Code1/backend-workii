@@ -104,7 +104,7 @@ export class AuthService {
 
             await this.sendOtpEmail(this.email)
             console.log("El OTP se le ha enviado");
-            return;
+            return {ok: false};
         } 
 
         if(!bcrypt.compareSync(this.password, user!.password)) {
@@ -113,6 +113,7 @@ export class AuthService {
         }
        
         return {
+            ok: true,
             ...user,
             token: this.getJwtToken( {id: user.id} )
         }

@@ -27,9 +27,10 @@ async function main() {
 
   app.setGlobalPrefix('api');
 
+  
+  app.enableCors();
   await app.listen(process.env.PORT || 3000);
   logger.log(`App running on port ${process.env.PORT || 3000}`);
-  
 }
 
 main();
