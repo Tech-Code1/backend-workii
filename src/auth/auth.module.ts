@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/users.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { ValidateJwt } from './middlewares/validate-jwt.middleware';
 
 
 @Module({
@@ -39,4 +40,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     TypeOrmModule
   ]
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(userContext: MiddlewareConsumer) {
+    userContext.apply(ValidateJwt) 
+    .forRoutes({path: 'auth/renew', method: RequestMethod.GET})
+  }
+}

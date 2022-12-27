@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, SetMetadata, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Header, Headers, Post, Req, Res, SetMetadata, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiTags } from "@nestjs/swagger";
 import { IncomingHttpHeaders } from "http";
@@ -11,6 +11,8 @@ import { GetUser } from "./decorators/get-user.decorator";
 import { RoleProtected } from "./decorators/role-protected.decorator";
 import { UserRoleGuard } from "./guards/user-role/user-role.guard";
 import { EValidRoles } from "./interfaces/valid-roles.interface";
+import { Request, Response } from 'express';
+import { Id } from "./decorators/get-id.decorator";
 
 @ApiTags('auth')
 @Controller("auth")
@@ -32,6 +34,12 @@ export class AuthController {
     async loginUser(@Body() loginUserDto: LoginUserDto): Promise<User| null> {
     
       return await this.authService.login(loginUserDto)
+  }
+
+  @Get('renew')
+  async refresh(@Req() req: Request, @Res() res: Response) {
+
+    return await this.authService.revalidateToken(req, res);
   }
 
   @Get('check-status')

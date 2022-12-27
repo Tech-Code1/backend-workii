@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -9,6 +9,9 @@ import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import * as nodemailer from "nodemailer";
 import { IJwtPaypload } from './interfaces/jwt-payload.interface';
+import { BadRequestException, HttpException } from '@nestjs/common/exceptions';
+import { HttpStatus } from '@nestjs/common/enums';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -109,7 +112,10 @@ export class AuthService {
 
         if(!bcrypt.compareSync(this.password, user!.password)) {
 
-            throw new UnauthorizedException('Las credenciales no son validas')
+            throw new HttpException({
+                 ok: false, 
+                 message: 'Las credenciales no son validas'
+                }, HttpStatus.BAD_REQUEST)
         }
        
         return {
@@ -160,5 +166,16 @@ export class AuthService {
          const token = this.jwtService.sign(payload);
          
          return token;
+    }
+
+    revalidateToken({id}: Request, res: Response) {
+
+        const token = this.getJwtToken({id})
+
+        return res.json( {
+            ok: true,
+            id,
+            token
+        })
     }
 }
