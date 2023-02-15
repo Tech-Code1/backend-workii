@@ -1,11 +1,12 @@
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
 import { IUser } from './interfaces/user.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateUserDto } from './DTOs/index.dto';
@@ -21,84 +22,106 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-   
-    private readonly logger = new Logger('UsersService');
 
-    constructor(
-        private authService: AuthService,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-        @InjectRepository(Workii)
-        private readonly workiiRepository: Repository<Workii>,
-        private readonly commonServices: CommonService,
-        private readonly jwtService: JwtService
-        //private readonly fileInterceptorService: FileInterceptorService  
-        ) {}
+  private readonly logger = new Logger('UsersService');
 
-    async create({password, email, avatar, workiis = [], ...usersDetails}: CreateUserDto, file: Express.Multer.File) {
-        
-        password = this.authService.password
-        email = this.authService.email
+  constructor(
+    private authService: AuthService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Workii)
+    private readonly workiiRepository: Repository<Workii>,
+    private readonly commonServices: CommonService,
+    private readonly jwtService: JwtService,
+    //private readonly fileInterceptorService: FileInterceptorService  
+  ) {}
 
-        if(!file) {
-            throw new BadRequestException('Make sure that the file is a image')
-        }
-        
-        //TODO: Cambiar endpoint de las imagenes (Se deberian subir a la nube)
-        avatar = join(__dirname, '../../static/avatars', file.filename);
-    
-        if( !existsSync(avatar) ) {
-          throw new BadRequestException(`Not product found with image ${file.filename}`);
-        }
-        
-        const hashedPassword = await this.authService.hashPassword(password);
+  async create(
+    {
+      password,
+      email,
+      avatar,
+      profession,
+      areaOfExpertise,
+      workiis = [],
+      ...usersDetails
+    }: CreateUserDto,
+    file: Express.Multer.File,
+  ) {
+    email = this.authService.email;
 
-        try {
-            if(password && email && this.authService.otpMatch) {
-            const user = this.userRepository.create(
-                {
-                    id: uuidv4(),
-                    password: hashedPassword,
-                    email,
-                    ...usersDetails,
-                    workiis: workiis.map((workii: Workii) => {
-                       return this.workiiRepository.create(workii)
-                    }),
-                    avatar,
-                    timeOfCreation: new Date().getTime()
-                }
-            )
-
-                await this.userRepository.save(user)
-                this.authService.otpIsValid = false
-
-                return {...user, workiis, token: this.authService.getJwtToken( {id: user.id} )};
-
-        }
-
-        throw new BadRequestException("Debes de ingresar tu correo y contraseña antes, o el OTP es erroneo");
-
-
-        } catch (error) {
-
-            this.commonServices.handleExceptions(error)
-
-        }
+    if (!file) {
+      throw new BadRequestException('Make sure that the file is a image');
     }
 
-    async getUserById(id: string) {
-        let user: User | null;
+    //TODO: Cambiar endpoint de las imagenes (Se deberian subir a la nube)
+    avatar = join(__dirname, '../../static/avatars', file.filename);
 
-        if(IsUUID(id)) {
-        user = await this.userRepository.findOneBy({ id: id })
-
-        if (!user) 
-        throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
-
-        return user
-
-        } 
+    if (!existsSync(avatar)) {
+      throw new BadRequestException(
+        `Not product found with image ${file.filename}`,
+      );
     }
+
+    /* if (!bcrypt.compareSync(this.authService.password, password)) {
+      throw new HttpException(
+        {
+          ok: false,
+          message: 'La contraseña no es igual a la anterior',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } */
+
+    const hashedPassword = await this.authService.hashPassword(password);
+
+    try {
+      if (password && email && this.authService.otpMatch) {
+        const user = this.userRepository.create({
+          id: uuidv4(),
+          password: hashedPassword,
+          email,
+          profession: JSON.parse(profession),
+          areaOfExpertise: JSON.parse(areaOfExpertise),
+          ...usersDetails,
+          workiis: workiis.map((workii: Workii) => {
+            return this.workiiRepository.create(workii);
+          }),
+          avatar,
+          timeOfCreation: new Date().getTime(),
+        });
+
+        await this.userRepository.save(user);
+        this.authService.otpIsValid = false;
+
+        return {
+          ...user,
+          workiis,
+          token: this.authService.getJwtToken({ id: user.id }),
+        };
+      }
+
+      throw new BadRequestException(
+        'Debes de ingresar tu correo y contraseña antes, o el OTP es erroneo',
+      );
+    } catch (error) {
+      this.commonServices.handleExceptions(error);
+    }
+  }
+
+  async getUserById(id: string) {
+    let user: User | null;
+
+    if (IsUUID(id)) {
+      user = await this.userRepository.findOneBy({ id: id })
+
+      if (!user)
+        throw new NotFoundException(
+          `El workii con el id ${id} no fue encontrado`,
+        );
+      return user;
+    }
+  }
 
     getAll(paginationDto: PaginationDto) {
         const { limit= 10, offset= 0 } = paginationDto

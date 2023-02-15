@@ -4,8 +4,8 @@ export interface IUser {
     password?: string,
     avatar: string,
     nick: string,
-    areaOfExpertise: string[],
-    profession: string[]
+    areaOfExpertise: string,
+    profession: string
 }
 
 

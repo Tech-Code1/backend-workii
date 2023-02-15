@@ -1,4 +1,4 @@
-import { IUser } from "src/users/interfaces/user.interface";
+/* import { IUser } from "src/users/interfaces/user.interface";
 import { v4 as uuidv4 } from 'uuid';
 
 export const USERS_SEED: IUser[] = [
@@ -20,4 +20,4 @@ export const USERS_SEED: IUser[] = [
         areaOfExpertise: ['Arte'],
         profession: ['Diseñador grafico']
     },
-]
+] */
