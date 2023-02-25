@@ -1,4 +1,10 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
@@ -13,10 +19,8 @@ import { validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/services/handleExceptions.service';
 import { User } from 'src/users/users.entity';
 
-
 @Injectable()
 export class WorkiisService {
-
   count = 1;
   today = new Date();
   private readonly logger = new Logger('WorkiisService');
@@ -26,51 +30,45 @@ export class WorkiisService {
     private readonly workiiRepository: Repository<Workii>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly commonServices: CommonService
-    /* @InjectRepository(Url)
-    private readonly urlRepository: Repository<Url> */
-  ){}
+    private readonly commonServices: CommonService /* @InjectRepository(Url)
+    private readonly urlRepository: Repository<Url> */,
+  ) {}
 
-  async create({name, executionTime, userId, ...restData}: CreateWorkiiDto) {
-
+  async create({ name, executionTime, userId, ...restData }: CreateWorkiiDto) {
     try {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    
-    if (!user) {
-      throw new Error(`El usuario con id ${userId} no fue encontrado`);
-    }
-  
-      const workii = this.workiiRepository.create(
-        {
-          id: uuidv4(),
-          name: name.toLocaleLowerCase(),
-          ...restData,
-          slug: nanoid(10),
-          status: 'Busqueda',
-          executionTime: 3,
-          timeOfCreation: new Date().getTime(),
-          user: user,
-        }
-      );
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error(`El usuario con id ${userId} no fue encontrado`);
+      }
+
+      const workii = this.workiiRepository.create({
+        id: uuidv4(),
+        name: name.toLocaleLowerCase(),
+        ...restData,
+        slug: nanoid(10),
+        status: 'Busqueda',
+        executionTime: 3,
+        timeOfCreation: new Date().getTime(),
+        user: user,
+      });
 
       await this.workiiRepository.save(workii);
 
       const result = await this.workiiRepository
-      .createQueryBuilder('workii')
-      .where('workii.id = :id', { id: workii.id })
-      .leftJoinAndSelect('workii.user', 'user')
-      .select(['workii', 'user.id'])
-      .getOne();
+        .createQueryBuilder('workii')
+        .where('workii.id = :id', { id: workii.id })
+        .leftJoinAndSelect('workii.user', 'user')
+        .select(['workii', 'user.id'])
+        .getOne();
 
       return result;
-      
     } catch (error) {
-      
-       this.commonServices.handleExceptions(error)
+      this.commonServices.handleExceptions(error);
     }
   }
 
-/* timelImit(days: number): number {
+  /* timelImit(days: number): number {
 
     let dataInitial: Date = new Date()
 
@@ -89,35 +87,35 @@ export class WorkiisService {
 } */
 
   findAll(paginationDto: PaginationDto) {
-    const { limit= 10, offset= 0 } = paginationDto
-    
+    const { limit = 10, offset = 0 } = paginationDto;
+
     return this.workiiRepository
-    .createQueryBuilder('workii')
-    .leftJoinAndSelect('workii.user', 'user')
-    .select(['workii', 'user.id'])
-    .take(limit)
-    .skip(offset)
-    .getMany()
+      .createQueryBuilder('workii')
+      .leftJoinAndSelect('workii.user', 'user')
+      .select(['workii', 'user.id'])
+      .take(limit)
+      .skip(offset)
+      .getMany();
   }
-  
+
   async findOne(code: string) {
-    
     let workii: Workii | null;
-    
-    if(IsUUID(code)) {
-      workii = await this.workiiRepository.findOneBy({ id: code })
 
+    if (IsUUID(code)) {
+      workii = await this.workiiRepository.findOneBy({ id: code });
     } else {
-
       const queryBuilder = this.workiiRepository.createQueryBuilder();
       workii = await queryBuilder
-      .where('slug =:slug', {
-        slug: code
-      }).getOne();
+        .where('slug =:slug', {
+          slug: code,
+        })
+        .getOne();
     }
 
-    if (!workii) 
-    throw new NotFoundException(`El workii con el id ${code} no fue encontrado`)
+    if (!workii)
+      throw new NotFoundException(
+        `El workii con el id ${code} no fue encontrado`,
+      );
 
     const result = await this.workiiRepository
       .createQueryBuilder('workii')
@@ -125,48 +123,43 @@ export class WorkiisService {
       .select(['workii', 'user.id'])
       .getOne();
 
-    return result
+    return result;
   }
 
   async update(id: string, updateWikiiDto: UpdateWikiiDto) {
     const workii = await this.workiiRepository.preload({
       id: id,
-      ...updateWikiiDto
-    })
+      ...updateWikiiDto,
+    });
 
-    if(!workii) {
-      throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+    if (!workii) {
+      throw new NotFoundException(
+        `El workii con el id ${id} no fue encontrado`,
+      );
     }
 
     try {
-      
-      await this.workiiRepository.save(workii)
+      await this.workiiRepository.save(workii);
       return workii;
-
     } catch (error) {
-
-      this.commonServices.handleExceptions(error)
-      
+      this.commonServices.handleExceptions(error);
     }
-
-
   }
 
   async remove(id: string) {
-    const workii = await this.workiiRepository.findOneBy({id});
+    const workii = await this.workiiRepository.findOneBy({ id });
 
-    if(workii !== null) {
-
+    if (workii !== null) {
       await this.workiiRepository.remove(workii);
-
     } else {
-      throw new NotFoundException(`El workii con el id ${id} no fue encontrado`)
+      throw new NotFoundException(
+        `El workii con el id ${id} no fue encontrado`,
+      );
     }
   }
 
   /* no production */
-  fillWorkiisWithSeedData(workii: Workii[]){
+  fillWorkiisWithSeedData(workii: Workii[]) {
     //this.workiis = workii;
-}
-
+  }
 }
