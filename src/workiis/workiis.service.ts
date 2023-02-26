@@ -1,19 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IErrorsTypeORM } from 'src/shared/interfaces/errorsTypeORM.interface';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
-import { Url } from 'src/url/url.entity';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/services/handleExceptions.service';
@@ -117,13 +109,7 @@ export class WorkiisService {
         `El workii con el id ${code} no fue encontrado`,
       );
 
-    const result = await this.workiiRepository
-      .createQueryBuilder('workii')
-      .leftJoinAndSelect('workii.user', 'user')
-      .select(['workii', 'user.id'])
-      .getOne();
-
-    return result;
+    return workii;
   }
 
   async update(id: string, updateWikiiDto: UpdateWikiiDto) {
@@ -159,7 +145,7 @@ export class WorkiisService {
   }
 
   /* no production */
-  fillWorkiisWithSeedData(workii: Workii[]) {
+  /* fillWorkiisWithSeedData(workii: Workii[]) {
     //this.workiis = workii;
-  }
+  } */
 }
