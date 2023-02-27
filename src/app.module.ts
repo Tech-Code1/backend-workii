@@ -11,16 +11,17 @@ import { CommonModule } from './common/common.module';
 //import { UrlModule } from './url/url.module';
 import { FilesModule } from './files/files.module';
 import { ChatModule } from './chat/chat.module';
+import { AplicationWorkiiModule } from './aplication_workii/aplication_workii.module';
 
 @Module({
   imports: [
-    AuthModule, 
+    AuthModule,
     ConfigModule.forRoot({
-      envFilePath: '.env', 
+      envFilePath: '.env',
       load: [config],
       isGlobal: true,
-    }), 
-    UsersModule, 
+    }),
+    UsersModule,
     WorkiisModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -35,9 +36,10 @@ import { ChatModule } from './chat/chat.module';
     CommonModule,
     FilesModule,
     ChatModule,
+    AplicationWorkiiModule,
   ],
   controllers: [],
   providers: [],
-  exports: []
+  exports: [],
 })
 export class AppModule {}

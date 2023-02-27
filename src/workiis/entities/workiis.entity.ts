@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { AplicationWorkii } from 'src/aplication_workii/entities/aplication_workii.entity';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { User } from '../../users/users.entity';
 import { Etarget } from '../interfaces/target.interface';
 
@@ -113,4 +120,7 @@ export class Workii {
 
   @ManyToOne(() => User, (user: User) => user.workiis)
   user?: User;
+
+  @OneToOne(() => AplicationWorkii, (aplication) => aplication.workii)
+  aplicationWorkii: AplicationWorkii;
 }

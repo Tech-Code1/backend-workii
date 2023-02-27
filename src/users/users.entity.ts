@@ -4,12 +4,13 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { EProfession } from './interfaces/profession.interface';
 import { EValidRoles } from '../auth/interfaces/valid-roles.interface';
+import { AplicationWorkii } from 'src/aplication_workii/entities/aplication_workii.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -102,4 +103,7 @@ export class User {
 
   @OneToMany(() => Workii, (workii: Workii) => workii.user, { eager: true })
   workiis?: Workii[];
+
+  @OneToOne(() => AplicationWorkii, (aplication) => aplication.user)
+  aplicationWorkii: AplicationWorkii;
 }
