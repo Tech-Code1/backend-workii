@@ -8,9 +8,11 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Workii } from 'src/workiis/entities/workiis.entity';
 import { EStatus } from '../interface/status.interface';
+import { User } from '../../users/users.entity';
 
-export class CreateAplicationWorkiiDto {
+export class CreateApplicationWorkiiDto {
   @ApiProperty({
     description: 'Id del workii',
     uniqueItems: true,
@@ -19,7 +21,7 @@ export class CreateAplicationWorkiiDto {
   })
   @IsString()
   @IsUUID()
-  readonly workii: string;
+  readonly workii: Workii;
 
   @ApiProperty({
     description: 'Id del usuario',
@@ -29,7 +31,7 @@ export class CreateAplicationWorkiiDto {
   })
   @IsString()
   @IsUUID()
-  readonly user: string;
+  readonly user: User;
 
   @ApiProperty({
     description: 'Mensaje de respuesta al usuario que aplico al workii',

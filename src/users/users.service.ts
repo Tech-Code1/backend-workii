@@ -1,7 +1,14 @@
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-import { Injectable, NotFoundException, BadRequestException, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -18,11 +25,8 @@ import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { validate as IsUUID } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 
-
-
 @Injectable()
 export class UsersService {
-
   private readonly logger = new Logger('UsersService');
 
   constructor(
@@ -33,8 +37,8 @@ export class UsersService {
     private readonly workiiRepository: Repository<Workii>,
     private readonly commonServices: CommonService,
     private readonly jwtService: JwtService,
-    //private readonly fileInterceptorService: FileInterceptorService  
-  ) {}
+  ) //private readonly fileInterceptorService: FileInterceptorService
+  {}
 
   async create(
     {
@@ -113,7 +117,7 @@ export class UsersService {
     let user: User | null;
 
     if (IsUUID(id)) {
-      user = await this.userRepository.findOneBy({ id: id })
+      user = await this.userRepository.findOneBy({ id: id });
 
       if (!user)
         throw new NotFoundException(
@@ -123,48 +127,45 @@ export class UsersService {
     }
   }
 
-    getAll(paginationDto: PaginationDto) {
-        const { limit= 10, offset= 0 } = paginationDto
+  getAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
 
-        return this.userRepository.find({
-        take: limit,
-        skip: offset,
-        relations: {
-            workiis: true
-        }
-        });
+    return this.userRepository.find({
+      take: limit,
+      skip: offset,
+      relations: {
+        workiis: true,
+      },
+    });
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.preload({
+      id: id,
+      ...updateUserDto,
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        `El usuario con el id ${id} no fue encontrado`,
+      );
     }
 
-    async update(id: string, updateUserDto: UpdateUserDto) {
-
-        const user = await this.userRepository.preload({
-            id: id,
-            ...updateUserDto
-          })
-      
-          if(!user) {
-            throw new NotFoundException(`El usuario con el id ${id} no fue encontrado`)
-          }
-      
-          try {
-            
-            await this.userRepository.save(user)
-            return user;
-      
-          } catch (error) {
-      
-            this.commonServices.handleExceptions(error)
-            
-          }
+    try {
+      await this.userRepository.save(user);
+      return user;
+    } catch (error) {
+      this.commonServices.handleExceptions(error);
     }
+  }
 
-    delete(id: string) {
-        /* const user = this.getUserById(id);
+  delete(id: string) {
+    /* const user = this.getUserById(id);
         this.users = this.users.filter(user => user.id !== id); */
-    }
+  }
 
-    /* no production */
-    fillUsersWithSeedData(user: IUser[]){
-        //this.users = user;
-    }
+  /* no production */
+  fillUsersWithSeedData(user: IUser[]) {
+    //this.users = user;
+  }
 }

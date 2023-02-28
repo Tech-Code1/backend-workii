@@ -2,16 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { Repository } from 'typeorm';
-import { UpdateAplicationWorkiiDto } from './dto/update-aplication_workii.dto';
-import { AplicationWorkii } from './entities/aplication_workii.entity';
+import { UpdateApplicationWorkiiDto } from './dto/update-application_workii.dto';
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from 'src/common/services/handleExceptions.service';
+import { ApplicationWorkii } from './entities/application_workii.entity';
 
 @Injectable()
-export class AplicationWorkiiService {
+export class ApplicationWorkiiService {
   constructor(
-    @InjectRepository(AplicationWorkii)
-    private readonly applicationWorkiiRepository: Repository<AplicationWorkii>,
+    @InjectRepository(ApplicationWorkii)
+    private readonly applicationWorkiiRepository: Repository<ApplicationWorkii>,
     private readonly commonServices: CommonService,
   ) {}
 
@@ -44,7 +44,7 @@ export class AplicationWorkiiService {
   }
 
   async findByApplicationId(id: string) {
-    let aplicationWorkii: AplicationWorkii | null;
+    let aplicationWorkii: ApplicationWorkii | null;
 
     if (IsUUID(id)) {
       aplicationWorkii = await this.applicationWorkiiRepository.findOneBy({
@@ -75,7 +75,7 @@ export class AplicationWorkiiService {
       responseMessage,
       selected,
       responseDate,
-    }: UpdateAplicationWorkiiDto,
+    }: UpdateApplicationWorkiiDto,
   ) {
     const aplicationWorkii = await this.applicationWorkiiRepository.preload({
       id: id,

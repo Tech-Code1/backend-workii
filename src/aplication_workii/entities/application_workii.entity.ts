@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
   Column,
+  ManyToOne,
 } from 'typeorm';
 import { Workii } from '../../workiis/entities/workiis.entity';
 import { User } from '../../users/users.entity';
 
 @Entity({ name: 'aplication_workii' })
-export class AplicationWorkii {
+export class ApplicationWorkii {
   @ApiProperty({
     example: '40a16f5d-f42c-49df-8998-edb2b4ff465a',
     description: 'Id de la aplicación a los workiis',
@@ -21,11 +21,11 @@ export class AplicationWorkii {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Workii)
+  @ManyToOne(() => Workii, (workii) => workii.applicationWorkiis)
   @JoinColumn({ name: 'workii_id' })
   workii: Workii;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User, (user) => user.applicationWorkiis)
   @JoinColumn({ name: 'user_id' })
   user: User;
 

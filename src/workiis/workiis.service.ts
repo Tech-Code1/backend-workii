@@ -1,15 +1,23 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Workii } from '../workiis/entities/workiis.entity';
 import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/services/handleExceptions.service';
 import { User } from 'src/users/users.entity';
+import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
+import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
+import { CreateUserDto } from '../users/DTOs/create-user.dto';
 
 @Injectable()
 export class WorkiisService {
@@ -22,6 +30,8 @@ export class WorkiisService {
     private readonly workiiRepository: Repository<Workii>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(ApplicationWorkii)
+    private readonly applicationWorkiiRepository: Repository<ApplicationWorkii>,
     private readonly commonServices: CommonService /* @InjectRepository(Url)
     private readonly urlRepository: Repository<Url> */,
   ) {}
@@ -55,6 +65,62 @@ export class WorkiisService {
         .getOne();
 
       return result;
+    } catch (error) {
+      this.commonServices.handleExceptions(error);
+    }
+  }
+
+  async applicationWorkii({
+    workii,
+    user,
+    ...restData
+  }: CreateApplicationWorkiiDto) {
+    try {
+      const userIdGeneral = await this.userRepository.findOne({
+        where: { id: user.id },
+      });
+
+      const userOwnerWorkiId = await this.workiiRepository.findOne({
+        where: { id: workii.user?.id },
+      });
+
+      if (!userIdGeneral) {
+        throw new Error(`El usuario con id ${userIdGeneral} no fue encontrado`);
+      }
+
+      if (userOwnerWorkiId?.id !== userIdGeneral.id) {
+        const applicationWorkii = this.applicationWorkiiRepository.create({
+          id: uuidv4(),
+          applicationDate: new Date().getTime(),
+          user: userIdGeneral,
+          workii: userOwnerWorkiId,
+          ...restData,
+        } as DeepPartial<ApplicationWorkii>);
+
+        const result = await this.applicationWorkiiRepository.save(
+          applicationWorkii,
+        );
+
+        // Actualiza el campo applications de la entidad Workii correspondiente
+        const workiiToUpdate = await this.workiiRepository.findOne({
+          where: { id: workii.id },
+        });
+        if (!workiiToUpdate) {
+          throw new Error(`El workii con id ${workii.id} no fue encontrado`);
+        }
+        if (workiiToUpdate)
+          workiiToUpdate.applications = (workiiToUpdate.applications || 0) + 1;
+        await this.workiiRepository.save(workiiToUpdate);
+
+        return result;
+      } else {
+        throw new BadRequestException({
+          ok: false,
+          statusCode: 400,
+          message:
+            'El usuario que ha creado el workii no puede aplicar a su propio workii',
+        });
+      }
     } catch (error) {
       this.commonServices.handleExceptions(error);
     }

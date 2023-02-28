@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -10,14 +9,13 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
-import { AplicationWorkiiService } from './aplication_workii.service';
-import { CreateAplicationWorkiiDto } from './dto/create-aplication_workii.dto';
-import { UpdateAplicationWorkiiDto } from './dto/update-aplication_workii.dto';
+import { ApplicationWorkiiService } from './application_workii.service';
+import { UpdateApplicationWorkiiDto } from './dto/update-application_workii.dto';
 
 @Controller('aplication-workii')
-export class AplicationWorkiiController {
+export class ApplicationWorkiiController {
   constructor(
-    private readonly aplicationWorkiiService: AplicationWorkiiService,
+    private readonly applicationWorkiiService: ApplicationWorkiiService,
   ) {}
 
   /* @Post()
@@ -27,33 +25,33 @@ export class AplicationWorkiiController {
 
   @Get('workii')
   findAllApplicationsWorkiiByWorkii(@Query() paginationDto: PaginationDto) {
-    return this.aplicationWorkiiService.findAllApplicationsWorkiiByWorkii(
+    return this.applicationWorkiiService.findAllApplicationsWorkiiByWorkii(
       paginationDto,
     );
   }
 
   @Get('user')
   findAllApplicationsWorkiiByUser(@Query() paginationDto: PaginationDto) {
-    return this.aplicationWorkiiService.findAllApplicationsWorkiiByUser(
+    return this.applicationWorkiiService.findAllApplicationsWorkiiByUser(
       paginationDto,
     );
   }
 
   @Get(':id')
   findByApplicationId(@Param('id') id: string) {
-    return this.aplicationWorkiiService.findByApplicationId(id);
+    return this.applicationWorkiiService.findByApplicationId(id);
   }
 
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateAplicationWorkiiDto: UpdateAplicationWorkiiDto,
+    @Body() updateAplicationWorkiiDto: UpdateApplicationWorkiiDto,
   ) {
-    return this.aplicationWorkiiService.update(id, updateAplicationWorkiiDto);
+    return this.applicationWorkiiService.update(id, updateAplicationWorkiiDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.aplicationWorkiiService.remove(id);
+    return this.applicationWorkiiService.remove(id);
   }
 }

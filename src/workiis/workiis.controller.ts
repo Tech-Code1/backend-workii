@@ -17,6 +17,7 @@ import { Auth } from 'src/auth/decorators/index.decorator';
 import { EValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Workii } from './entities/workiis.entity';
+import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
 
 @Controller('workiis')
 @ApiTags('workiis')
@@ -34,6 +35,20 @@ export class WorkiisController {
   @ApiResponse({ status: 403, description: 'Forbiden. Token related' })
   create(@Body() createWikiiDto: CreateWorkiiDto) {
     return this.workiisService.create(createWikiiDto);
+  }
+
+  @Post('applications')
+  @ApiResponse({
+    status: 201,
+    description: 'Se ha aplicado al workii correctamente',
+    type: Workii,
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 403, description: 'Forbiden. Token related' })
+  applicationWorkii(
+    @Body() createApplicationWorkiiDto: CreateApplicationWorkiiDto,
+  ) {
+    return this.workiisService.applicationWorkii(createApplicationWorkiiDto);
   }
 
   @Get()

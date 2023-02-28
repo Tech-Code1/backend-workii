@@ -135,10 +135,27 @@ export class CreateWorkiiDto {
   @IsIn(['Busqueda', 'Eligiendo', 'Iniciado', 'Finalizado'])
   status?: string;
 
+  @ApiProperty({
+    description: 'Costo que el usuario esta dispuesto pagar por el workii',
+    uniqueItems: false,
+    default: 0,
+    required: true,
+    nullable: false,
+  })
+  @Min(0, {
+    message:
+      'El minimo de aplicaciones dentro de un workii puede ser de 0 o mas',
+  })
+  @Max(200, {
+    message: 'Un workii puede tener máximo 200 personas aplicando a la vez',
+  })
+  @IsNumber()
+  applications: number;
+
   //TODO: se debe eliminar este campo y hacer la consulta en la relación del usuario para crear el workii
   @IsString()
   @IsUUID()
-  user_id: string;
+  userId: string;
 
   @ApiProperty({
     description: 'Tiempo en el que se tiene que completar el workii',

@@ -1,16 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Etarget } from 'src/workiis/interfaces/target.interface';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
-import { Workii } from '../workiis/entities/workiis.entity';
-import { EProfession } from './interfaces/profession.interface';
 import { EValidRoles } from '../auth/interfaces/valid-roles.interface';
-import { AplicationWorkii } from 'src/aplication_workii/entities/aplication_workii.entity';
+import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { Workii } from 'src/workiis/entities/workiis.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -104,6 +101,6 @@ export class User {
   @OneToMany(() => Workii, (workii: Workii) => workii.user, { eager: true })
   workiis?: Workii[];
 
-  @OneToOne(() => AplicationWorkii, (aplication) => aplication.user)
-  aplicationWorkii: AplicationWorkii;
+  @OneToMany(() => ApplicationWorkii, (application) => application.user)
+  applicationWorkiis: ApplicationWorkii[];
 }

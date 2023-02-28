@@ -6,16 +6,15 @@ import { Workii } from './entities/workiis.entity';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { User } from '../users/users.entity';
 import { AuthModule } from '../auth/auth.module';
+import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
 
 @Module({
   controllers: [WorkiisController],
   providers: [WorkiisService, CommonService],
-  exports: [
-    WorkiisService
-  ],
+  exports: [WorkiisService],
   imports: [
-    TypeOrmModule.forFeature([Workii, User]),
-    AuthModule,  
-  ]
+    TypeOrmModule.forFeature([Workii, User, ApplicationWorkii]),
+    AuthModule,
+  ],
 })
 export class WorkiisModule {}
