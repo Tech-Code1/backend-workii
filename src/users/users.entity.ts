@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { EValidRoles } from '../auth/interfaces/valid-roles.interface';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -101,6 +96,9 @@ export class User {
   @OneToMany(() => Workii, (workii: Workii) => workii.user, { eager: true })
   workiis?: Workii[];
 
-  @OneToMany(() => ApplicationWorkii, (application) => application.user)
+  @OneToMany(
+    () => ApplicationWorkii,
+    (application: ApplicationWorkii) => application.user,
+  )
   applicationWorkiis: ApplicationWorkii[];
 }

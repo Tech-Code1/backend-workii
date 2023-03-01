@@ -8,26 +8,28 @@ async function main() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('main');
 
-  const options = new DocumentBuilder() 
+  const options = new DocumentBuilder()
     .setTitle('Workii REST API')
     .setDescription('API REST of Workii')
     .setVersion('1.0')
-    .addBearerAuth( 
+    .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token', 
+      'access-token',
     )
     .build();
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api', app, document);
 
-    app.useGlobalPipes(new ValidationPipe({
+  app.useGlobalPipes(
+    new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-    }))
+      transform: true,
+    }),
+  );
 
   app.setGlobalPrefix('api');
 
-  
   app.enableCors();
   await app.listen(process.env.PORT || 3000);
   logger.log(`App running on port ${process.env.PORT || 3000}`);

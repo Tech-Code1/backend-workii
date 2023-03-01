@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsDate,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -21,7 +23,7 @@ export class CreateApplicationWorkiiDto {
   })
   @IsString()
   @IsUUID()
-  readonly workii: Workii;
+  workii: string;
 
   @ApiProperty({
     description: 'Id del usuario',
@@ -31,7 +33,7 @@ export class CreateApplicationWorkiiDto {
   })
   @IsString()
   @IsUUID()
-  readonly user: User;
+  user: string;
 
   @ApiProperty({
     description: 'Mensaje de respuesta al usuario que aplico al workii',
@@ -45,7 +47,7 @@ export class CreateApplicationWorkiiDto {
   })
   @IsString({ message: `El mensaje debe ser un string` })
   @IsOptional()
-  readonly responseMessage: string;
+  responseMessage?: string;
 
   @ApiProperty({
     example: 'dd/mm/yyyy',
@@ -53,11 +55,11 @@ export class CreateApplicationWorkiiDto {
       'Fecha de respuesta del creador del workii al usuario que aplico',
     uniqueItems: false,
     required: false,
-    type: Number,
+    type: Date,
   })
-  @IsNumber()
+  @IsDate({ message: `La respuesta debe ser una fecha` })
   @IsOptional()
-  responseDate: number;
+  responseDate?: Date;
 
   @ApiProperty({
     example: 'dd/mm/yyyy',
@@ -78,8 +80,9 @@ export class CreateApplicationWorkiiDto {
     enum: EStatus,
     nullable: false,
   })
+  @IsOptional()
   @IsString({
     message: `El estatus debe ser un string`,
   })
-  readonly status: string;
+  status: string;
 }

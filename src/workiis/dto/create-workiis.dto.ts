@@ -149,8 +149,9 @@ export class CreateWorkiiDto {
   @Max(200, {
     message: 'Un workii puede tener máximo 200 personas aplicando a la vez',
   })
+  @IsOptional()
   @IsNumber()
-  applications: number;
+  applications?: number;
 
   //TODO: se debe eliminar este campo y hacer la consulta en la relación del usuario para crear el workii
   @IsString()

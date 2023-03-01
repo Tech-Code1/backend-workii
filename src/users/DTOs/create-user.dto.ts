@@ -29,7 +29,7 @@ export class CreateUserDto {
   })
   @IsString({ message: `El correo debe ser un string` })
   @IsOptional()
-  readonly email?: string;
+  email?: string;
 
   @ApiProperty({
     description: 'Contraseña del usuario',
@@ -43,7 +43,7 @@ export class CreateUserDto {
   })
   @IsString({ message: `El password debe ser un string` })
   @IsOptional()
-  readonly password: string;
+  password: string;
 
   @ApiProperty({
     description: 'Avatar del usuario',
@@ -58,7 +58,7 @@ export class CreateUserDto {
   })
   @IsString({ message: `El recurso del avatar debe ser un string` })
   @IsOptional()
-  readonly avatar?: string;
+  avatar?: string;
 
   @ApiProperty({
     description: 'Apodo del usuario',
@@ -71,7 +71,7 @@ export class CreateUserDto {
     message: 'El campo excede el número de caracteres permitidos',
   })
   @IsString({ message: `El nick debe ser un string` })
-  readonly nick: string;
+  nick: string;
 
   @ApiProperty({
     description: 'Area en el que se especializa el usuario',
@@ -83,7 +83,7 @@ export class CreateUserDto {
   @IsString({
     message: `El área de expertis debe ser un string`,
   })
-  readonly areaOfExpertise: string;
+  areaOfExpertise: string;
 
   @ApiProperty({
     description: 'Profesion del usuario',
@@ -93,7 +93,7 @@ export class CreateUserDto {
     nullable: false,
   })
   @IsString({ message: `La profesión debe ser un string` })
-  readonly profession: string;
+  profession: string;
 
   @ApiProperty({
     description: 'Workiis creados por el usuario',
@@ -103,5 +103,5 @@ export class CreateUserDto {
     nullable: true,
   })
   @IsArray({ message: `El workii tiene un formato erroneo` })
-  readonly workiis?: Workii[] = [];
+  workiis?: Workii[] = [];
 }

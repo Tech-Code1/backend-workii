@@ -9,15 +9,22 @@ import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
 import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { nanoid } from 'nanoid';
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/services/handleExceptions.service';
 import { User } from 'src/users/users.entity';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
+import { Response } from 'express';
+import {
+  applicationWorkiisBadReques,
+  applicationWorkiisBadRequesDoubleApplication,
+  applicationWorkiisBadRequesId,
+  applicationWorkiisCreate,
+  applicationWorkiisInternalError,
+} from './responses/workiis.responses';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
-import { CreateUserDto } from '../users/DTOs/create-user.dto';
 
 @Injectable()
 export class WorkiisService {
@@ -70,58 +77,73 @@ export class WorkiisService {
     }
   }
 
-  async applicationWorkii({
-    workii,
-    user,
-    ...restData
-  }: CreateApplicationWorkiiDto) {
+  async applicationWorkii(
+    workiiId: string,
+    userId: string,
+    res: Response,
+    { workii, user, ...rest }: CreateApplicationWorkiiDto,
+  ) {
     try {
-      const userIdGeneral = await this.userRepository.findOne({
-        where: { id: user.id },
-      });
+      const workiiFindId = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .where('workii.id =:id', { id: workiiId })
+        .leftJoinAndSelect('workii.user', 'user')
+        .select(['workii.id', 'workii.applications', 'user.id'])
+        .getOne();
 
-      const userOwnerWorkiId = await this.workiiRepository.findOne({
-        where: { id: workii.user?.id },
-      });
+      const userFindId = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id =:id', { id: userId })
+        .select(['user.id'])
+        .getOne();
 
-      if (!userIdGeneral) {
-        throw new Error(`El usuario con id ${userIdGeneral} no fue encontrado`);
+      if (!workiiFindId?.id || !workiiFindId?.user?.id) {
+        res.json(applicationWorkiisBadRequesId);
+        throw new BadRequestException(applicationWorkiisBadRequesId);
       }
 
-      if (userOwnerWorkiId?.id !== userIdGeneral.id) {
+      if (workiiFindId?.user?.id !== userFindId?.id) {
         const applicationWorkii = this.applicationWorkiiRepository.create({
           id: uuidv4(),
           applicationDate: new Date().getTime(),
-          user: userIdGeneral,
-          workii: userOwnerWorkiId,
-          ...restData,
-        } as DeepPartial<ApplicationWorkii>);
-
-        const result = await this.applicationWorkiiRepository.save(
-          applicationWorkii,
-        );
-
-        // Actualiza el campo applications de la entidad Workii correspondiente
-        const workiiToUpdate = await this.workiiRepository.findOne({
-          where: { id: workii.id },
+          user: userId,
+          workii: workiiId,
+          ...rest,
         });
-        if (!workiiToUpdate) {
-          throw new Error(`El workii con id ${workii.id} no fue encontrado`);
+
+        const application = await this.applicationWorkiiRepository
+          .createQueryBuilder('applications')
+          .select(['applications.id', 'user.id'])
+          .where('applications.user =:user', { user: userId })
+          .leftJoin('applications.user', 'user')
+          .getOne();
+
+        if (userId !== application?.user && application?.user === undefined) {
+          const result = await this.applicationWorkiiRepository.save(
+            applicationWorkii,
+          );
+          if (result && workiiFindId.applications) {
+            const currentApplications = Number(workiiFindId.applications);
+            const addApplication: number = currentApplications + 1;
+
+            await this.workiiRepository.update(workiiFindId.id, {
+              applications: addApplication,
+            });
+          }
+
+          res.json(applicationWorkiisCreate);
+        } else {
+          res.json(applicationWorkiisBadRequesDoubleApplication);
+          throw new BadRequestException(
+            applicationWorkiisBadRequesDoubleApplication,
+          );
         }
-        if (workiiToUpdate)
-          workiiToUpdate.applications = (workiiToUpdate.applications || 0) + 1;
-        await this.workiiRepository.save(workiiToUpdate);
-
-        return result;
       } else {
-        throw new BadRequestException({
-          ok: false,
-          statusCode: 400,
-          message:
-            'El usuario que ha creado el workii no puede aplicar a su propio workii',
-        });
+        res.json(applicationWorkiisBadReques);
+        throw new BadRequestException(applicationWorkiisBadReques);
       }
     } catch (error) {
+      res.json(applicationWorkiisInternalError);
       this.commonServices.handleExceptions(error);
     }
   }

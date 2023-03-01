@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import { CreateWorkiiDto } from './dto/create-workiis.dto';
@@ -18,6 +19,10 @@ import { EValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Workii } from './entities/workiis.entity';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
+import { Response } from 'express';
+import { PostApplicationDto } from 'src/aplication_workii/dto/post-application-workii.dto';
+import { ValidationPipe } from '@nestjs/common';
+import { User } from 'src/users/users.entity';
 
 @Controller('workiis')
 @ApiTags('workiis')
@@ -41,19 +46,24 @@ export class WorkiisController {
   @ApiResponse({
     status: 201,
     description: 'Se ha aplicado al workii correctamente',
-    type: Workii,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Forbiden. Token related' })
-  applicationWorkii(
+  async applicationWorkii(
+    @Res() res: Response,
+    @Body() { workii, user }: PostApplicationDto,
     @Body() createApplicationWorkiiDto: CreateApplicationWorkiiDto,
   ) {
-    return this.workiisService.applicationWorkii(createApplicationWorkiiDto);
+    return await this.workiisService.applicationWorkii(
+      workii,
+      user,
+      res,
+      createApplicationWorkiiDto,
+    );
   }
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
-    //console.log(paginationDto);
     return this.workiisService.findAll(paginationDto);
   }
 

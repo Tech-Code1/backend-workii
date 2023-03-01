@@ -123,5 +123,5 @@ export class Workii {
   user?: User;
 
   @OneToMany(() => ApplicationWorkii, (application) => application.workii)
-  applicationWorkiis: ApplicationWorkii;
+  applicationWorkiis: ApplicationWorkii[];
 }
