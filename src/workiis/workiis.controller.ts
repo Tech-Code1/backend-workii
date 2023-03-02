@@ -42,7 +42,7 @@ export class WorkiisController {
     return this.workiisService.create(createWikiiDto);
   }
 
-  @Post('applications')
+  @Post('application')
   @ApiResponse({
     status: 201,
     description: 'Se ha aplicado al workii correctamente',

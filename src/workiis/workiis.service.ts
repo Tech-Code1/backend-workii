@@ -17,14 +17,8 @@ import { CommonService } from '../common/services/handleExceptions.service';
 import { User } from 'src/users/users.entity';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
 import { Response } from 'express';
-import {
-  applicationWorkiisBadReques,
-  applicationWorkiisBadRequesDoubleApplication,
-  applicationWorkiisBadRequesId,
-  applicationWorkiisCreate,
-  applicationWorkiisInternalError,
-} from './responses/workiis.responses';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
+import { log } from 'console';
 
 @Injectable()
 export class WorkiisService {
@@ -98,8 +92,10 @@ export class WorkiisService {
         .getOne();
 
       if (!workiiFindId?.id || !workiiFindId?.user?.id) {
-        res.json(applicationWorkiisBadRequesId);
-        throw new BadRequestException(applicationWorkiisBadRequesId);
+        res.status(400).json({
+          message: 'El workii con el id solicitado no se encuentra',
+        });
+        throw new BadRequestException();
       }
 
       if (workiiFindId?.user?.id !== userFindId?.id) {
@@ -113,12 +109,14 @@ export class WorkiisService {
 
         const application = await this.applicationWorkiiRepository
           .createQueryBuilder('applications')
-          .select(['applications.id', 'user.id'])
+          .select(['applications.id', 'user.id', 'workii.id'])
           .where('applications.user =:user', { user: userId })
+          .andWhere('applications.workii =:workii', { workii: workiiId })
           .leftJoin('applications.user', 'user')
+          .leftJoin('applications.workii', 'workii')
           .getOne();
 
-        if (userId !== application?.user && application?.user === undefined) {
+        if (!application) {
           const result = await this.applicationWorkiiRepository.save(
             applicationWorkii,
           );
@@ -131,19 +129,26 @@ export class WorkiisService {
             });
           }
 
-          res.json(applicationWorkiisCreate);
+          res.status(201).json({
+            message: 'El usuario ha aplicado al workii de manera correcta',
+          });
         } else {
-          res.json(applicationWorkiisBadRequesDoubleApplication);
-          throw new BadRequestException(
-            applicationWorkiisBadRequesDoubleApplication,
-          );
+          res.status(400).json({
+            message: 'El usuario no puede aplicar 2 veces al mismo workii',
+          });
+          throw new BadRequestException();
         }
       } else {
-        res.json(applicationWorkiisBadReques);
-        throw new BadRequestException(applicationWorkiisBadReques);
+        res.status(400).json({
+          message:
+            'El usuario que ha creado el workii no puede aplicar a su propio workii',
+        });
+        throw new BadRequestException();
       }
     } catch (error) {
-      res.json(applicationWorkiisInternalError);
+      res.status(500).json({
+        message: 'La petición tiene un error o no es valida',
+      });
       this.commonServices.handleExceptions(error);
     }
   }
