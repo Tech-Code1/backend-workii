@@ -6,6 +6,8 @@ import { UpdateApplicationWorkiiDto } from './dto/update-application_workii.dto'
 import { validate as IsUUID } from 'uuid';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { ApplicationWorkii } from './entities/application_workii.entity';
+import { Response } from 'express';
+import { log } from 'console';
 
 @Injectable()
 export class ApplicationWorkiiService {
@@ -31,16 +33,27 @@ export class ApplicationWorkiiService {
       .getMany();
   }
 
-  findAllApplicationsWorkiiByUser(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
-
-    return this.applicationWorkiiRepository
-      .createQueryBuilder('aplication_workii')
-      .leftJoinAndSelect('aplication_workii.workii', 'user')
-      .select(['user', 'user.id'])
-      .take(limit)
-      .skip(offset)
+  async findAllApplicationsWorkiiByUser(id: string) {
+    const applicationUser = await this.applicationWorkiiRepository
+      .createQueryBuilder('applications')
+      .select(['applications.id', 'user.id', 'workii.id'])
+      .where('applications.user =:user', { user: id })
+      .leftJoin('applications.user', 'user')
+      .leftJoin('applications.workii', 'workii')
       .getMany();
+
+    const result = applicationUser.map((item) => {
+      return {
+        ...item,
+      };
+    });
+
+    /* return res.status(200).json({
+      applicationUser,
+      isApplicationUser,
+    }); */
+
+    return result;
   }
 
   async findByApplicationId(id: string) {

@@ -130,7 +130,7 @@ export class WorkiisService {
           }
 
           res.status(201).json({
-            message: 'El usuario ha aplicado al workii de manera correcta',
+            message: 'has aplicado al workii de manera correcta',
           });
         } else {
           res.status(400).json({
