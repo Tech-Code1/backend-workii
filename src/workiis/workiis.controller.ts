@@ -80,6 +80,14 @@ export class WorkiisController {
     return this.workiisService.update(id, updateWikiiDto);
   }
 
+  @Delete('apply/:id')
+  removeApplication(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() response: Response,
+  ) {
+    return this.workiisService.removeApplication(id, response);
+  }
+
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.workiisService.remove(id);

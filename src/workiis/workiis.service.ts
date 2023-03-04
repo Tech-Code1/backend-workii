@@ -153,6 +153,28 @@ export class WorkiisService {
     }
   }
 
+  async removeApplication(id: string, res: Response) {
+    const application = await this.applicationWorkiiRepository.findOneBy({
+      id,
+    });
+
+    console.log(application);
+
+    if (application !== null) {
+      await this.applicationWorkiiRepository.remove(application);
+      res.status(200).json({
+        message: 'Has abadonado el workii de manera correcta',
+      });
+    } else {
+      res.status(404).json({
+        message: `El workii con el id ${id} no fue encontrado`,
+      });
+      throw new NotFoundException(
+        `El workii con el id ${id} no fue encontrado`,
+      );
+    }
+  }
+
   /* timelImit(days: number): number {
 
     let dataInitial: Date = new Date()
