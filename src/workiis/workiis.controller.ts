@@ -21,8 +21,6 @@ import { Workii } from './entities/workiis.entity';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
 import { Response } from 'express';
 import { PostApplicationDto } from 'src/aplication_workii/dto/post-application-workii.dto';
-import { ValidationPipe } from '@nestjs/common';
-import { User } from 'src/users/users.entity';
 
 @Controller('workiis')
 @ApiTags('workiis')
@@ -89,7 +87,10 @@ export class WorkiisController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.workiisService.remove(id);
+  async deleteWorkii(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() response: Response,
+  ) {
+    return await this.workiisService.deleteWorkii(id, response);
   }
 }

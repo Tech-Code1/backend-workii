@@ -18,7 +18,6 @@ import { User } from 'src/users/users.entity';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
 import { Response } from 'express';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
-import { log } from 'console';
 
 @Injectable()
 export class WorkiisService {
@@ -158,8 +157,6 @@ export class WorkiisService {
       id,
     });
 
-    console.log(application);
-
     if (application !== null) {
       await this.applicationWorkiiRepository.remove(application);
       res.status(200).json({
@@ -167,10 +164,10 @@ export class WorkiisService {
       });
     } else {
       res.status(404).json({
-        message: `El workii con el id ${id} no fue encontrado`,
+        message: `Algo inesperado ha ocurrido, no has podido abandonar el workii`,
       });
       throw new NotFoundException(
-        `El workii con el id ${id} no fue encontrado`,
+        `Algo inesperado ha ocurrido, no has podido abandonar el workii`,
       );
     }
   }
@@ -247,14 +244,20 @@ export class WorkiisService {
     }
   }
 
-  async remove(id: string) {
+  async deleteWorkii(id: string, res: Response) {
     const workii = await this.workiiRepository.findOneBy({ id });
 
     if (workii !== null) {
       await this.workiiRepository.remove(workii);
+      res.status(200).json({
+        message: 'Has eliminado el workii de manera correcta',
+      });
     } else {
+      res.status(404).json({
+        message: 'Algo inesperado ha ocurrido, el workii no pudo ser eliminado',
+      });
       throw new NotFoundException(
-        `El workii con el id ${id} no fue encontrado`,
+        `Algo inesperado ha ocurrido, el workii no pudo ser eliminado`,
       );
     }
   }
