@@ -208,11 +208,11 @@ export class WorkiisService {
     if (IsUUID(code)) {
       workii = await this.workiiRepository.findOneBy({ id: code });
     } else {
-      const queryBuilder = this.workiiRepository.createQueryBuilder();
+      const queryBuilder = this.workiiRepository.createQueryBuilder('workii');
       workii = await queryBuilder
-        .where('slug =:slug', {
-          slug: code,
-        })
+        .where('slug =:slug', { slug: code })
+        .select(['workii', 'user.id'])
+        .leftJoin('workii.user', 'user')
         .getOne();
     }
 
