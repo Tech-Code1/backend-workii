@@ -152,19 +152,42 @@ export class WorkiisService {
     }
   }
 
-  async removeApplication(id: string, res: Response) {
+  async removeApplication(id: string, workii: string, res: Response) {
     const application = await this.applicationWorkiiRepository.findOneBy({
       id,
     });
 
+    console.log(workii);
+
     if (application !== null) {
       await this.applicationWorkiiRepository.remove(application);
-      res.status(200).json({
-        message: 'Has abadonado el workii de manera correcta',
-      });
+
+      const workiiFindId = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .where('workii.id =:id', { id: workii })
+        .leftJoinAndSelect('workii.user', 'user')
+        .select(['workii.id', 'workii.applications', 'user.id'])
+        .getOne();
+
+      console.log(workiiFindId?.id);
+      console.log(workii);
+      console.log(id);
+
+      if (workiiFindId) {
+        const currentApplications = Number(workiiFindId.applications);
+        const addApplication: number = currentApplications - 1;
+
+        await this.workiiRepository.update(workiiFindId.id, {
+          applications: addApplication,
+        });
+
+        res.status(200).json({
+          message: 'Has abadonado el workii de manera correcta',
+        });
+      }
     } else {
       res.status(404).json({
-        message: `Algo inesperado ha ocurrido, no has podido abandonar el workii`,
+        message: `Algo inesperado ha ocurrido`,
       });
       throw new NotFoundException(
         `Algo inesperado ha ocurrido, no has podido abandonar el workii`,

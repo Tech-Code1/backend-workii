@@ -33,9 +33,13 @@ export class ApplicationWorkiiController {
   }
 
   @Get('user/:id')
-  async findAllApplicationsWorkiiByUser(@Param('id') id: string) {
+  async findAllApplicationsWorkiiByUser(
+    @Param('id') id: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
     return await this.applicationWorkiiService.findAllApplicationsWorkiiByUser(
       id,
+      paginationDto,
     );
   }
 

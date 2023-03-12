@@ -33,13 +33,18 @@ export class ApplicationWorkiiService {
       .getMany();
   }
 
-  async findAllApplicationsWorkiiByUser(id: string) {
+  async findAllApplicationsWorkiiByUser(
+    id: string,
+    { limit = 10, offset = 0 }: PaginationDto,
+  ) {
     const applicationUser = await this.applicationWorkiiRepository
       .createQueryBuilder('applications')
       .select(['applications.id', 'user.id', 'workii.id'])
       .where('applications.user =:user', { user: id })
       .leftJoin('applications.user', 'user')
       .leftJoin('applications.workii', 'workii')
+      .take(limit)
+      .skip(offset)
       .getMany();
 
     const result = applicationUser.map((item) => {
@@ -55,6 +60,24 @@ export class ApplicationWorkiiService {
 
     return result;
   }
+
+  /* async findAllApplicationsWorkiiByUser(id: string) {
+    const applicationUser = await this.applicationWorkiiRepository
+      .createQueryBuilder('applications')
+      .select(['applications.id', 'user.id', 'workii.id'])
+      .where('applications.user =:user', { user: id })
+      .leftJoin('applications.user', 'user')
+      .leftJoin('applications.workii', 'workii')
+      .getMany();
+
+    const result = applicationUser.map((item) => {
+      return {
+        ...item,
+      };
+    });
+
+    return result;
+  } */
 
   async findByApplicationId(id: string) {
     let aplicationWorkii: ApplicationWorkii | null;

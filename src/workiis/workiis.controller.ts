@@ -9,7 +9,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ParseUUIDPipe } from '@nestjs/common/pipes';
+import { ParseUUIDPipe, ValidationPipe } from '@nestjs/common/pipes';
 import { CreateWorkiiDto } from './dto/create-workiis.dto';
 import { UpdateWikiiDto } from './dto/update-workiis.dto';
 import { WorkiisService } from './workiis.service';
@@ -82,8 +82,10 @@ export class WorkiisController {
   removeApplication(
     @Param('id', ParseUUIDPipe) id: string,
     @Res() response: Response,
+    @Body() workii: string,
   ) {
-    return this.workiisService.removeApplication(id, response);
+    console.log(workii);
+    return this.workiisService.removeApplication(id, workii, response);
   }
 
   @Delete(':id')
