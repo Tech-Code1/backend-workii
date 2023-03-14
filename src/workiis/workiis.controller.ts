@@ -82,9 +82,8 @@ export class WorkiisController {
   removeApplication(
     @Param('id', ParseUUIDPipe) id: string,
     @Res() response: Response,
-    @Body() workii: string,
+    @Body('workii', ParseUUIDPipe) workii: string,
   ) {
-    console.log(workii);
     return this.workiisService.removeApplication(id, workii, response);
   }
 

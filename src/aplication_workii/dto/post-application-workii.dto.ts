@@ -22,6 +22,6 @@ export class PostApplicationDto {
     nullable: false,
   })
   @IsString()
-  @IsUUID()
+  @IsString()
   user: string;
 }

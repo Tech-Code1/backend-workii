@@ -130,19 +130,19 @@ export class WorkiisService {
 
           res.status(201).json({
             message: 'has aplicado al workii de manera correcta',
+            user: userId,
+            workii: workiiId,
           });
         } else {
           res.status(400).json({
             message: 'El usuario no puede aplicar 2 veces al mismo workii',
           });
-          throw new BadRequestException();
         }
       } else {
         res.status(400).json({
           message:
             'El usuario que ha creado el workii no puede aplicar a su propio workii',
         });
-        throw new BadRequestException();
       }
     } catch (error) {
       res.status(500).json({
@@ -157,8 +157,6 @@ export class WorkiisService {
       id,
     });
 
-    console.log(workii);
-
     if (application !== null) {
       await this.applicationWorkiiRepository.remove(application);
 
@@ -168,10 +166,6 @@ export class WorkiisService {
         .leftJoinAndSelect('workii.user', 'user')
         .select(['workii.id', 'workii.applications', 'user.id'])
         .getOne();
-
-      console.log(workiiFindId?.id);
-      console.log(workii);
-      console.log(id);
 
       if (workiiFindId) {
         const currentApplications = Number(workiiFindId.applications);
@@ -189,9 +183,6 @@ export class WorkiisService {
       res.status(404).json({
         message: `Algo inesperado ha ocurrido`,
       });
-      throw new NotFoundException(
-        `Algo inesperado ha ocurrido, no has podido abandonar el workii`,
-      );
     }
   }
 
