@@ -7,12 +7,10 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
-  Res,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { ApplicationWorkiiService } from './application_workii.service';
 import { UpdateApplicationWorkiiDto } from './dto/update-application_workii.dto';
-import { Response } from 'express';
 
 @Controller('applications')
 export class ApplicationWorkiiController {
@@ -25,19 +23,23 @@ export class ApplicationWorkiiController {
     return this.aplicationWorkiiService.create(createAplicationWorkiiDto);
   } */
 
-  @Get('workii')
-  findAllApplicationsWorkiiByWorkii(@Query() paginationDto: PaginationDto) {
-    return this.applicationWorkiiService.findAllApplicationsWorkiiByWorkii(
-      paginationDto,
-    );
-  }
-
   @Get('user/:id')
   async findAllApplicationsWorkiiByUser(
     @Param('id') id: string,
     @Query() paginationDto: PaginationDto,
   ) {
     return await this.applicationWorkiiService.findAllApplicationsWorkiiByUser(
+      id,
+      paginationDto,
+    );
+  }
+
+  @Get('users/:id')
+  async getAllApplyUsersByWorkii(
+    @Param('id') id: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.applicationWorkiiService.getAllApplyUsersByWorkii(
       id,
       paginationDto,
     );
