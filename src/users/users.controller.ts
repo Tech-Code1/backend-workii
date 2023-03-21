@@ -66,10 +66,28 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      fileFilter: fileFilter,
+      limits: { fileSize: 1000000 },
+      storage: diskStorage({
+        destination: './static/avatars',
+        filename: fileNamer,
+      }),
+    }),
+  )
   updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() avatarFile: Express.Multer.File,
   ) {
+    if (avatarFile) {
+      const backendUrl = 'http://localhost:3000';
+      const avatarPath = `/static/avatars/${avatarFile.filename}`;
+      const fullAvatarUrl = backendUrl + avatarPath;
+      updateUserDto.avatar = fullAvatarUrl;
+    }
+    console.log(updateUserDto);
     return this.usersService.update(id, updateUserDto);
   }
 

@@ -11,6 +11,8 @@ import { FilesModule } from './files/files.module';
 import { ChatModule } from './chat/chat.module';
 import { ApplicationWorkiiModule } from './aplication_workii/application_workii.module';
 import { dataSourceOptions } from './shared/typeorm/data-source';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,10 @@ import { dataSourceOptions } from './shared/typeorm/data-source';
     FilesModule,
     ChatModule,
     ApplicationWorkiiModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      serveRoot: '/static'
+    }),
   ],
   controllers: [],
   providers: [],

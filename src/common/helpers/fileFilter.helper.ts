@@ -1,17 +1,24 @@
+export const fileFilter = (
+  req: Express.Request,
+  file: Express.Multer.File,
+  callback: Function,
+) => {
+  //console.log(file);
 
-export const fileFilter = (req: Express.Request, file: Express.Multer.File, callback: Function )=> {
+  if (!file) return callback(new Error('File is empty'), false);
 
-    //console.log(file);
+  const fileExpression = file.mimetype.split('/')[1];
+  const validExtenssions = ['jpg', 'png', 'svg', 'gif', 'tif', 'jpeg'];
 
-    if(!file) return callback(new Error('File is empty'), false)
+  if (validExtenssions.includes(fileExpression)) {
+    return callback(null, true);
+  }
 
-    const fileExpression = file.mimetype.split('/')[1];
-    const validExtenssions = ['jpg', 'png', 'svg', 'gif', 'tif', 'jpeg'];
-
-    if( validExtenssions.includes(fileExpression)) {
-        return callback(null, true);
-    }
-    
-    callback(null,false)
-
-}
+  // Proporciona un mensaje de error específico para archivos con extensiones no válidas
+  callback(
+    new Error(
+      'Invalid file type. Only jpg, png, svg, gif, tif, and jpeg are allowed.',
+    ),
+    false,
+  );
+};

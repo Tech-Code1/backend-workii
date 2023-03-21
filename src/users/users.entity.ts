@@ -51,14 +51,14 @@ export class User {
     description: 'Area en el que se especializa el usuario',
   })
   @Column('text', { array: true, name: 'area_of_Expertise' })
-  areaOfExpertise: string[] | string;
+  areaOfExpertise: string[];
 
   @ApiProperty({
     example: ['Arte', 'Ingenieria'],
     description: 'Profesion del usuario',
   })
   @Column('text', { array: true })
-  profession: string[] | string;
+  profession: string[];
 
   @ApiProperty({
     example: true,

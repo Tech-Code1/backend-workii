@@ -36,9 +36,8 @@ export class UsersService {
     @InjectRepository(Workii)
     private readonly workiiRepository: Repository<Workii>,
     private readonly commonServices: CommonService,
-    private readonly jwtService: JwtService,
-  ) //private readonly fileInterceptorService: FileInterceptorService
-  {}
+    private readonly jwtService: JwtService, //private readonly fileInterceptorService: FileInterceptorService
+  ) {}
 
   async create(
     {
@@ -59,13 +58,11 @@ export class UsersService {
     }
 
     //TODO: Cambiar endpoint de las imagenes (Se deberian subir a la nube)
-    avatar = join(__dirname, '../../static/avatars', file.filename);
-
-    if (!existsSync(avatar)) {
-      throw new BadRequestException(
-        `Not product found with image ${file.filename}`,
-      );
-    }
+    // Asignar la ruta relativa del avatar
+    const backendUrl = 'http://localhost:3000';
+    const avatarPath = `/static/avatars/${file.filename}`;
+    const fullAvatarUrl = backendUrl + avatarPath;
+    avatar = fullAvatarUrl;
 
     /* if (!bcrypt.compareSync(this.authService.password, password)) {
       throw new HttpException(
@@ -85,8 +82,8 @@ export class UsersService {
           id: uuidv4(),
           password: hashedPassword,
           email,
-          profession: JSON.parse(profession),
-          areaOfExpertise: JSON.parse(areaOfExpertise),
+          profession: profession,
+          areaOfExpertise: areaOfExpertise,
           ...usersDetails,
           workiis: workiis.map((workii: Workii) => {
             return this.workiiRepository.create(workii);
@@ -139,10 +136,14 @@ export class UsersService {
     });
   }
 
+  excludeWorkiis(user: User): Partial<User> {
+    const { workiis, ...userWithoutWorkiis } = user;
+    return userWithoutWorkiis;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.preload({
-      id: id,
-      ...updateUserDto,
+    const user = await this.userRepository.findOne({
+      where: { id: id },
     });
 
     if (!user) {
@@ -151,9 +152,15 @@ export class UsersService {
       );
     }
 
+    // Excluir la propiedad workiis del updateUserDto
+    const { workiis, ...updateUserDtoWithoutWorkiis } = updateUserDto;
+
+    // Asignar el updateUserDto sin la propiedad workiis al objeto user
+    const updatedUser = Object.assign(user, updateUserDtoWithoutWorkiis);
+
     try {
-      await this.userRepository.save(user);
-      return user;
+      await this.userRepository.save(updatedUser);
+      return this.excludeWorkiis(updatedUser);
     } catch (error) {
       this.commonServices.handleExceptions(error);
     }

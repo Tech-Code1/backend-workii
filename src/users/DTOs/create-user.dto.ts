@@ -80,10 +80,10 @@ export class CreateUserDto {
     enum: Etarget,
     nullable: false,
   })
-  @IsString({
+  @IsArray({
     message: `El área de expertis debe ser un string`,
   })
-  areaOfExpertise: string;
+  areaOfExpertise: string[];
 
   @ApiProperty({
     description: 'Profesion del usuario',
@@ -92,8 +92,8 @@ export class CreateUserDto {
     enum: EProfession,
     nullable: false,
   })
-  @IsString({ message: `La profesión debe ser un string` })
-  profession: string;
+  @IsArray({ message: `La profesión debe ser un string` })
+  profession: string[];
 
   @ApiProperty({
     description: 'Workiis creados por el usuario',

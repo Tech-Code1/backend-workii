@@ -16,7 +16,6 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [User, Workii, ApplicationWorkii],
   migrations: ['dist/shared/typeorm/migrations/*.js'],
   synchronize: true,
-  logging: true,
 };
 
 const dataSource = new DataSource(dataSourceOptions);
