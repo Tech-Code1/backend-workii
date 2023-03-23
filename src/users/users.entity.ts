@@ -47,18 +47,18 @@ export class User {
   nick: string;
 
   @ApiProperty({
-    example: ['Arte', 'Informatica'],
+    example: 'Informatica',
     description: 'Area en el que se especializa el usuario',
   })
-  @Column('text', { array: true, name: 'area_of_Expertise' })
-  areaOfExpertise: string[];
+  @Column('text', { name: 'area_of_Expertise'})
+  areaOfExpertise: string;
 
   @ApiProperty({
-    example: ['Arte', 'Ingenieria'],
+    example: 'Arte',
     description: 'Profesion del usuario',
   })
-  @Column('text', { array: true })
-  profession: string[];
+  @Column('text')
+  profession: string;
 
   @ApiProperty({
     example: true,
