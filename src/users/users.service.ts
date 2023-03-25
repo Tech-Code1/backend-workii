@@ -114,11 +114,16 @@ export class UsersService {
     let user: User | null;
 
     if (IsUUID(id)) {
-      user = await this.userRepository.findOneBy({ id: id });
+      user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.workiis', 'workiis')
+        .addSelect('workiis.id')
+        .where('user.id = :id', { id: id })
+        .getOne();
 
       if (!user)
         throw new NotFoundException(
-          `El workii con el id ${id} no fue encontrado`,
+          `El usuario con el id ${id} no fue encontrado`,
         );
       return user;
     }
