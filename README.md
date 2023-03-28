@@ -21,17 +21,17 @@
 
 >En la variable `NODEMAILER_USER` debes colocar el correo con el que enviaras el token para que los usuarios se puedan registrar en la app, ya que los usuarios se registran con un código OTP para verificar que el correo exista, ademas debes de colocar la contraseña que google te da (Si es que lo haces con gmail) para poder darle acceso a aplicaciones de terceros en la variable correspondiente `PASS_GMAIL`.
 
+![](./static/images/env-example-3.png)
+
 ***Nota:** Recuerda que la contraseña de gmail no es directamente la contraseña que creas. Es una contraseña que google te da especificamente para darle acceso a aplicaciones de terceros.*
 
->Google a partir de 30 de mayo del 2022 cambio sus politicas para compartir datos con terceros, acá te dejo un tutorial de como puedes hacer esto para ver la nueva forma de compartir estos datos (Ver desde el minuto 2:17 hasta el minuto 6:19) :
+>**Google a partir de 30 de mayo del 2022 cambio sus politicas para compartir datos con terceros, acá te dejo un tutorial de como puedes hacer esto para ver la nueva forma de compartir estos datos (Ver desde el minuto 2:17 hasta el minuto 6:19) :**
 
 <div>
 <p style = 'text-align:center;'>
 <a href="https://youtu.be/RpSQQIGTpTM" target="_blank" title="Link Title"><img src="https://i.ytimg.com/vi_webp/RpSQQIGTpTM/maxresdefault.webp" alt="tutorial" width="720px"/></a>
 </div>
 </p>
-
-![](./static/images/env-example-3.png)
 
 1. Levantar la base de datos
 ```
