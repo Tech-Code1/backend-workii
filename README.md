@@ -25,21 +25,19 @@
 
 >Google a partir de 30 de mayo del 2022 cambio sus politicas para compartir datos con terceros, acá te dejo un tutorial de como puedes hacer esto para ver la nueva forma de compartir estos datos (Ver desde el minuto 2:17 hasta el minuto 6:19) :
 
-<div>
-<p style = 'text-align:center;'>
+<div style = 'text-align:center;'>
 <iframe width="600" height = "420"
 src="https://youtu.be/RpSQQIGTpTM">
 </iframe>
 </div>
-</p>
 
 
 ![](./static/images/env-example-3.png)
 
-5. Levantar la base de datos
+1. Levantar la base de datos
 ```
 docker-compose up -d
 ```
-6. Ejecutar el modo de desarrollo ```npm run start:dev```
+1. Ejecutar el modo de desarrollo ```npm run start:dev```
    
-7. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`
+2. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`
