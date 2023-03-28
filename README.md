@@ -25,10 +25,9 @@
 
 >Google a partir de 30 de mayo del 2022 cambio sus politicas para compartir datos con terceros, acá te dejo un tutorial de como puedes hacer esto para ver la nueva forma de compartir estos datos (Ver desde el minuto 2:17 hasta el minuto 6:19) :
 
-<div style = 'text-align:center'>
-<iframe width="560" height="315" src="https://youtu.be/RpSQQIGTpTM" frameborder="0" allowfullscreen></iframe>
+<div style ='text-align:center;'>
+<a href="https://youtu.be/RpSQQIGTpTM" target="_BLANK" title="Link Title"><img src="https://i.ytimg.com/vi_webp/RpSQQIGTpTM/maxresdefault.webp" alt="tutorial" width="720px"/></a>
 </div>
-
 
 ![](./static/images/env-example-3.png)
 
