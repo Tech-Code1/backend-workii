@@ -6,10 +6,13 @@
 
 # Workii API
 
-1. Clonar proyecto
-2. ```npm install```
-3. Renombrar el archivo ```.env.template``` con el nombre de ```.env```
-4. Cambiar las variables de entorno.
+**1. Clonar proyecto.**
+
+**2. Instalar todas las dependencias: ```npm install```.**
+
+**3. Renombrar el archivo ```.env.template``` con el nombre de ```.env```.**
+
+**4. Cambiar las variables de entorno.**
 
 >En las variables `DB_PASS` debes de colocar la contraseña de tu base de datos de postgress, y en la variable `DB_USER` debes colocar la respectiva contraseña de tu base de datos.
 
@@ -33,10 +36,10 @@
 </div>
 </p>
 
-5. Levantar la base de datos
+**5. Levantar la base de datos.**
 ```
 docker-compose up -d
 ```
-6. Ejecutar el modo de desarrollo ```npm run start:dev```
+**6. Ejecutar el modo de desarrollo ```npm run start:dev```.**
    
-7. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`
+**7. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`.**
