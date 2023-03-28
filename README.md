@@ -2,7 +2,7 @@
 
 | **Nest** | **TypeORM** | **Docker** |
 |-|-|-|
-| <a target="_BLANK" href="https://docs.nestjs.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/NestJS.svg" alt="Nest" width="64px"></a> | <a target="_BLANK" href="https://typeorm.io/"><img src="https://seeklogo.com/images/T/typeorm-logo-F243B34DEE-seeklogo.com.png" alt="TypeORM" width="64px"></a> | <a target="_BLANK" href="https://www.docker.com/"><img src="https://cdn-icons-png.flaticon.com/512/919/919853.png" alt="Docker" width="64px"></a> |
+| <a target="_blank" href="https://docs.nestjs.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/NestJS.svg" alt="Nest" width="64px"></a> | <a target="_blank" href="https://typeorm.io/"><img src="https://seeklogo.com/images/T/typeorm-logo-F243B34DEE-seeklogo.com.png" alt="TypeORM" width="64px"></a> | <a target="_blank" href="https://www.docker.com/"><img src="https://cdn-icons-png.flaticon.com/512/919/919853.png" alt="Docker" width="64px"></a> |
 
 # Workii API
 
@@ -25,9 +25,11 @@
 
 >Google a partir de 30 de mayo del 2022 cambio sus politicas para compartir datos con terceros, acá te dejo un tutorial de como puedes hacer esto para ver la nueva forma de compartir estos datos (Ver desde el minuto 2:17 hasta el minuto 6:19) :
 
-<div style ='text-align:center;'>
-<a href="https://youtu.be/RpSQQIGTpTM" target="_BLANK" title="Link Title"><img src="https://i.ytimg.com/vi_webp/RpSQQIGTpTM/maxresdefault.webp" alt="tutorial" width="720px"/></a>
+<div>
+<p style = 'text-align:center;'>
+<a href="https://youtu.be/RpSQQIGTpTM" target="_blank" title="Link Title"><img src="https://i.ytimg.com/vi_webp/RpSQQIGTpTM/maxresdefault.webp" alt="tutorial" width="720px"/></a>
 </div>
+</p>
 
 ![](./static/images/env-example-3.png)
 
