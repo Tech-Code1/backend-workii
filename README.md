@@ -33,10 +33,10 @@
 </div>
 </p>
 
-1. Levantar la base de datos
+5. Levantar la base de datos
 ```
 docker-compose up -d
 ```
-1. Ejecutar el modo de desarrollo ```npm run start:dev```
+6. Ejecutar el modo de desarrollo ```npm run start:dev```
    
-2. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`
+7. Cuando ejecutes el backend podrás ver la documentación de los endpoints en el siguiente link: `http://localhost:3000/api`
