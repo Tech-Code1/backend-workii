@@ -50,7 +50,7 @@ export class WorkiisService {
         ...restData,
         slug: nanoid(10),
         status: 'Busqueda',
-        executionTime: 3,
+        executionTime: executionTime,
         timeOfCreation: new Date().getTime(),
         user: user,
       });
