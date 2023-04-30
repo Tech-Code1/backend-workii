@@ -34,7 +34,7 @@ export class WorkiisService {
     private readonly applicationWorkiiRepository: Repository<ApplicationWorkii>,
     private readonly commonServices: CommonService /* @InjectRepository(Url)
     private readonly urlRepository: Repository<Url> */,
-  ) {}
+  ) { }
 
   async create({ name, executionTime, userId, ...restData }: CreateWorkiiDto) {
     try {
@@ -149,6 +149,29 @@ export class WorkiisService {
         message: 'La petición tiene un error o no es valida',
       });
       this.commonServices.handleExceptions(error);
+    }
+  }
+
+  async searchWorkiis(
+    searchTerm: string,
+    limit: number,
+    offset: number,
+  ): Promise<Workii[]> {
+    try {
+      const workiis = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .where('LOWER(workii.name) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
+        })
+        .leftJoinAndSelect('workii.user', 'user')
+        .select(['workii', 'user.id'])
+        .take(limit) // Limitar la cantidad de resultados
+        .skip(offset) // Comenzar desde un índice específico
+        .getMany();
+      console.log(workiis, 'workii');
+      return workiis || [];
+    } catch (error) {
+      return [];
     }
   }
 

@@ -26,7 +26,7 @@ import { PostApplicationDto } from 'src/aplication_workii/dto/post-application-w
 @ApiTags('workiis')
 @Auth(EValidRoles.user)
 export class WorkiisController {
-  constructor(private readonly workiisService: WorkiisService) {}
+  constructor(private readonly workiisService: WorkiisService) { }
 
   @Post()
   @ApiResponse({
@@ -63,6 +63,15 @@ export class WorkiisController {
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.workiisService.findAll(paginationDto);
+  }
+
+  @Get('search')
+  async searchWorkiis(
+    @Query('searchTerm') searchTerm: string,
+    @Query('limit') limit: number,
+    @Query('offset') offset: number,
+  ): Promise<Workii[]> {
+    return this.workiisService.searchWorkiis(searchTerm, limit, offset);
   }
 
   @Get(':code')
