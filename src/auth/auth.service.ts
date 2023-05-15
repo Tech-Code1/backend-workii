@@ -167,18 +167,43 @@ export class AuthService {
   }
 
   getJwtToken(payload: IJwtPaypload): string {
-    const token = this.jwtService.sign(payload);
+    const expiresIn = process.env.JWT_EXPIRES_IN || '2h';
+
+    const token = this.jwtService.sign(payload, {
+      expiresIn: expiresIn,
+    });
 
     return token;
   }
 
-  revalidateToken({ id }: Request, res: Response) {
-    const token = this.getJwtToken({ id });
+  async revalidateToken(req: Request, res: Response) {
+    console.log(req, 'req');
 
-    return res.json({
-      ok: true,
-      id,
-      token,
-    });
+    const token = req.headers['authorization'];
+
+    if (typeof token === 'string') {
+      try {
+        // Verifica y decodifica el token
+        const decoded = this.jwtService.verify(token);
+
+        // Si el token es válido, simplemente responde con un mensaje de éxito
+        return res.json({
+          ok: true,
+          id: decoded.id,
+          message: 'Token válido',
+        });
+      } catch (error) {
+        // Si algo sale mal (por ejemplo, el token es inválido), envía un mensaje de error
+        return res.status(401).json({
+          ok: false,
+          message: 'Token no válido',
+        });
+      }
+    } else {
+      return res.status(401).json({
+        ok: false,
+        message: 'Token no proporcionado o no válido',
+      });
+    }
   }
 }

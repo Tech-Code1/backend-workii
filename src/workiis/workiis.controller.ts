@@ -61,8 +61,8 @@ export class WorkiisController {
   }
 
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.workiisService.findAll(paginationDto);
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return await this.workiisService.findAll(paginationDto);
   }
 
   @Get('search')
@@ -70,7 +70,7 @@ export class WorkiisController {
     @Query('searchTerm') searchTerm: string,
     @Query('limit') limit: number,
     @Query('offset') offset: number,
-  ): Promise<Workii[]> {
+  ): Promise<{ workiis: Workii[]; totalSearchResults: number }> {
     return this.workiisService.searchWorkiis(searchTerm, limit, offset);
   }
 

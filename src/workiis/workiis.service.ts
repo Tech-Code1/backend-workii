@@ -34,7 +34,7 @@ export class WorkiisService {
     private readonly applicationWorkiiRepository: Repository<ApplicationWorkii>,
     private readonly commonServices: CommonService /* @InjectRepository(Url)
     private readonly urlRepository: Repository<Url> */,
-  ) { }
+  ) {}
 
   async create({ name, executionTime, userId, ...restData }: CreateWorkiiDto) {
     try {
@@ -156,7 +156,7 @@ export class WorkiisService {
     searchTerm: string,
     limit: number,
     offset: number,
-  ): Promise<Workii[]> {
+  ): Promise<{ workiis: Workii[]; totalSearchResults: number }> {
     try {
       const workiis = await this.workiiRepository
         .createQueryBuilder('workii')
@@ -168,10 +168,17 @@ export class WorkiisService {
         .take(limit) // Limitar la cantidad de resultados
         .skip(offset) // Comenzar desde un índice específico
         .getMany();
-      console.log(workiis, 'workii');
-      return workiis || [];
+
+      const totalSearchResults = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .where('LOWER(workii.name) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
+        })
+        .getCount();
+
+      return { workiis: workiis || [], totalSearchResults };
     } catch (error) {
-      return [];
+      return { workiis: [], totalSearchResults: 0 };
     }
   }
 
@@ -227,16 +234,24 @@ export class WorkiisService {
     throw new NotFoundException("Los días ingresados son invalidos");
 } */
 
-  findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+  async findAll({ limit, offset }: PaginationDto) {
+    try {
+      const workiis = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .leftJoinAndSelect('workii.user', 'user')
+        .select(['workii', 'user.id'])
+        .take(limit)
+        .skip(offset)
+        .getMany();
 
-    return this.workiiRepository
-      .createQueryBuilder('workii')
-      .leftJoinAndSelect('workii.user', 'user')
-      .select(['workii', 'user.id'])
-      .take(limit)
-      .skip(offset)
-      .getMany();
+      const totalResults = await this.workiiRepository
+        .createQueryBuilder('workii')
+        .getCount();
+
+      return { workiis, totalResults };
+    } catch (error) {
+      return { workiis: [], totalResults: 0 };
+    }
   }
 
   async findOne(code: string) {
