@@ -98,7 +98,13 @@ export class UsersService {
         return {
           ...user,
           workiis,
-          token: this.authService.getJwtToken({ id: user.id }),
+          token: this.authService.getAccesToken({
+            id: user.id,
+            isAccessToken: true,
+          }),
+          refreshToken: this.authService.getRefreshToken({
+            id: user.id,
+          }),
         };
       }
 

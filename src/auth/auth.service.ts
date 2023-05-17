@@ -17,6 +17,8 @@ import { IJwtPaypload } from './interfaces/jwt-payload.interface';
 import { BadRequestException, HttpException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
 import { Request, Response } from 'express';
+import { config } from '../auth/config/auth.config';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -96,6 +98,14 @@ export class AuthService {
     return (password = plainToHash);
   }
 
+  generateRefreshToken(user: User) {
+    const payload = { userId: user.id };
+    const secret = config.secret || '1d';
+    const options = { expiresIn: '1d' };
+
+    return jwt.sign(payload, secret, options);
+  }
+
   async login({ email, password }: LoginUserDto): Promise<any> {
     this.email = email!.trim().toLocaleLowerCase();
     this.password = password!;
@@ -126,7 +136,8 @@ export class AuthService {
     return {
       ok: true,
       ...user,
-      token: this.getJwtToken({ id: user.id }),
+      token: this.getAccesToken({ id: user.id, isAccessToken: true }),
+      refreshToken: this.getRefreshToken({ id: user.id, isAccessToken: true }),
     };
   }
 
@@ -162,17 +173,23 @@ export class AuthService {
   async checkAuthStatus(user: User) {
     return {
       ...user,
-      token: this.getJwtToken({ id: user.id }),
+      token: this.getAccesToken({ id: user.id, isAccessToken: true }),
     };
   }
 
-  getJwtToken(payload: IJwtPaypload): string {
-    const expiresIn = process.env.JWT_EXPIRES_IN || '2h';
+  getAccesToken(payload: IJwtPaypload): string {
+    const expiresIn = config.jwtExpiration || '2h';
 
     const token = this.jwtService.sign(payload, {
-      expiresIn: expiresIn,
+      expiresIn,
     });
 
+    return token;
+  }
+
+  getRefreshToken(payload: IJwtPaypload): string {
+    const expiresIn = config.jwtRefreshExpiration || '1d';
+    const token = this.jwtService.sign(payload, { expiresIn });
     return token;
   }
 
@@ -204,6 +221,31 @@ export class AuthService {
         ok: false,
         message: 'Token no proporcionado o no válido',
       });
+    }
+  }
+
+  async refreshToken(refreshToken: string) {
+    const { TokenExpiredError } = jwt;
+    try {
+      const payload = this.jwtService.verify(refreshToken) as IJwtPaypload;
+
+      if (payload.isAccessToken) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      const user = await this.userRepository.findBy({ id: payload.id });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      return this.getAccesToken({ id: payload.id, isAccessToken: true });
+    } catch (e) {
+      if (e instanceof TokenExpiredError) {
+        throw new UnauthorizedException('Refresh token expired');
+      } else {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
     }
   }
 }

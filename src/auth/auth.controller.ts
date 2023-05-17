@@ -45,6 +45,11 @@ export class AuthController {
     return await this.authService.revalidateToken(req, res);
   }
 
+  @Post('refresh-token')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
+  }
+
   @Get('check-status')
   @Auth()
   checkAuthStatus(@GetUser() user: User) {

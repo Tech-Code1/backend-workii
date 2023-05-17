@@ -12,6 +12,7 @@ import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { IJwtPaypload } from '../interfaces/jwt-payload.interface';
 import { Id } from '../decorators/get-id.decorator';
+import { config } from '../config/auth.config';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -23,6 +24,7 @@ declare module 'express-serve-static-core' {
 export class ValidateJwt implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const token = req.header('authorization');
+    const { TokenExpiredError } = jwt;
 
     if (!token) {
       throw new HttpException(
@@ -35,18 +37,27 @@ export class ValidateJwt implements NestMiddleware {
     }
 
     try {
-      const { id } = jwt.verify(token, process.env.JWT_SECRET!) as IJwtPaypload;
+      const { id } = jwt.verify(token, config.secret!) as IJwtPaypload;
       req.id = id;
     } catch (error) {
-      throw new HttpException(
-        {
-          ok: false,
-          message: 'Token no valido',
-        },
-        HttpStatus.UNAUTHORIZED,
-      );
+      if (error instanceof TokenExpiredError) {
+        throw new HttpException(
+          {
+            ok: false,
+            message: 'Unauthorized! Access Token was expired!',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      } else {
+        throw new HttpException(
+          {
+            ok: false,
+            message: 'Token no valido',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
     }
-
     //TODO: OK
     next();
   }

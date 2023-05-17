@@ -30,7 +30,10 @@ async function main() {
 
   app.setGlobalPrefix('api');
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+  });
   await app.listen(process.env.PORT || 3000);
   logger.log(`App running on port ${process.env.PORT || 3000}`);
 }
