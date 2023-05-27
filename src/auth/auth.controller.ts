@@ -15,69 +15,66 @@ import { EValidRoles } from './interfaces/valid-roles.interface';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+	constructor(private readonly authService: AuthService) {}
 
-  @Get('otp')
-  generatePassword(): string {
-    return this.authService.createOtp();
-  }
+	@Get('otp')
+	generatePassword(): string {
+		return this.authService.createOtp();
+	}
 
-  @Post('validate/otp')
-  validatePassword(@Body('otp') otp: string, @Res() res: Response) {
-    this.authService.validateTimePassword(otp, res);
-  }
+	@Post('validate/otp')
+	validatePassword(@Body('otp') otp: string, @Res() res: Response) {
+		this.authService.validateTimePassword(otp, res);
+	}
 
-  @Post('login')
-  async loginUser(@Body() loginUserDto: LoginUserDto): Promise<User | null> {
-    return await this.authService.login(loginUserDto);
-  }
+	@Post('login')
+	async loginUser(@Body() loginUserDto: LoginUserDto): Promise<User | null> {
+		return await this.authService.login(loginUserDto);
+	}
 
-  /* @Get('revalidate')
+	/* @Get('revalidate')
   async refresh(@Req() req: Request, @Res() res: Response) {
     return await this.authService.revalidateToken(req, res);
   } */
 
-  @Post('refresh-token')
-  async refreshToken(@Body('refreshToken') refreshToken: string) {
-    return this.authService.refreshToken(refreshToken);
-  }
+	@Post('refresh-token')
+	async refreshToken(@Body('refreshToken') refreshToken: string) {
+		return this.authService.refreshToken(refreshToken);
+	}
 
-  @Get('check-status')
-  @Auth()
-  checkAuthStatus(@GetUser() user: User) {
-    return this.authService.checkAuthStatus(user);
-  }
+	@Get('check-status')
+	@Auth()
+	checkAuthStatus(@GetUser() user: User) {
+		return this.authService.checkAuthStatus(user);
+	}
 
-  @Get('private')
-  @UseGuards(AuthGuard())
-  testingPrivateRoute(
-    @GetUser(['email', 'nick', 'roles', 'isActive']) user: User,
-    @RawHeaders() rawHeaders: string,
-  ) {
-    return {
-      ok: true,
-      user,
-      rawHeaders,
-    };
-  }
-  //@SetMetadata('roles', ['admin', 'super-user'])
+	@Get('private')
+	@UseGuards(AuthGuard())
+	testingPrivateRoute(@GetUser(['email', 'nick', 'roles', 'isActive']) user: User, @RawHeaders() rawHeaders: string) {
+		return {
+			ok: true,
+			user,
+			rawHeaders
+		};
+	}
+	//@SetMetadata('roles', ['admin', 'super-user'])
 
-  @Get('private2')
-  @RoleProtected(EValidRoles.superuser, EValidRoles.admin, EValidRoles.user)
-  @UseGuards(AuthGuard(), UserRoleGuard)
-  privateRoute2(@GetUser() user: User) {
-    return {
-      ok: true,
-      user,
-    };
-  }
+	@Get('private2')
+	@RoleProtected(EValidRoles.superuser, EValidRoles.admin, EValidRoles.user)
+	@UseGuards(AuthGuard(), UserRoleGuard)
+	privateRoute2(@GetUser() user: User) {
+		return {
+			ok: true,
+			user
+		};
+	}
 
-  @Get('private3')
-  @Auth(EValidRoles.admin)
-  privateRoute3(@GetUser() user: User) {
-    return {
-      ok: true,
-      user,
-    };
-  }
+	@Get('private3')
+	@Auth(EValidRoles.admin)
+	privateRoute3(@GetUser() user: User) {
+		return {
+			ok: true,
+			user
+		};
+	}
 }

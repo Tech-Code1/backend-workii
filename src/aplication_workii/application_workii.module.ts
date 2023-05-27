@@ -6,9 +6,9 @@ import { ApplicationWorkii } from './entities/application_workii.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  controllers: [ApplicationWorkiiController],
-  providers: [ApplicationWorkiiService, CommonService],
-  exports: [ApplicationWorkiiService],
-  imports: [TypeOrmModule.forFeature([ApplicationWorkii])],
+	controllers: [ApplicationWorkiiController],
+	providers: [ApplicationWorkiiService, CommonService],
+	exports: [ApplicationWorkiiService],
+	imports: [TypeOrmModule.forFeature([ApplicationWorkii])]
 })
 export class ApplicationWorkiiModule {}

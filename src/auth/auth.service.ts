@@ -95,8 +95,8 @@ export class AuthService {
 	}
 
 	async login({ email, password }: LoginUserDto): Promise<any> {
-		this.email = email!.trim().toLocaleLowerCase();
-		this.password = password!;
+		this.email = email?.trim().toLocaleLowerCase();
+		this.password = password;
 
 		const user = await this.userRepository
 			.createQueryBuilder('user')
@@ -111,7 +111,7 @@ export class AuthService {
 			return { ok: false, email, password };
 		}
 
-		if (!bcrypt.compareSync(this.password, user!.password)) {
+		if (!bcrypt.compareSync(this.password, user?.password)) {
 			throw new HttpException(
 				{
 					ok: false,

@@ -1,7 +1,7 @@
 export enum EStatus {
-  Pending = 'Pendiente',
-  Accepted = 'Aceptado',
-  Rejected = 'Rechazado',
+	Pending = 'Pendiente',
+	Accepted = 'Aceptado',
+	Rejected = 'Rechazado'
 }
 
 /* export interface IResponseApplicationUser {
