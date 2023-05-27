@@ -1,14 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { LoginUserDto } from 'src/auth/DTOs/login-user.dto';
 import { RawHeaders } from 'src/common/decorators/raw-headers.decorators';
 import { User } from 'src/users/users.entity';
@@ -18,7 +11,6 @@ import { GetUser } from './decorators/get-user.decorator';
 import { RoleProtected } from './decorators/role-protected.decorator';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
 import { EValidRoles } from './interfaces/valid-roles.interface';
-import { Request, Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,10 +32,10 @@ export class AuthController {
     return await this.authService.login(loginUserDto);
   }
 
-  @Get('renew')
+  /* @Get('revalidate')
   async refresh(@Req() req: Request, @Res() res: Response) {
     return await this.authService.revalidateToken(req, res);
-  }
+  } */
 
   @Post('refresh-token')
   async refreshToken(@Body('refreshToken') refreshToken: string) {

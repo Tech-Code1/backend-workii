@@ -1,4 +1,4 @@
 export interface IJwtPaypload {
-  id: string;
-  isAccessToken?: boolean;
+	id: string;
+	isAccessToken?: boolean;
 }

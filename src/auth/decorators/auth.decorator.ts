@@ -5,8 +5,5 @@ import { EValidRoles } from '../interfaces/valid-roles.interface';
 import { RoleProtected } from './index.decorator';
 
 export function Auth(...roles: EValidRoles[]) {
-  return applyDecorators(
-    RoleProtected( ...roles ),
-    UseGuards( AuthGuard(), UserRoleGuard)
-  );
+	return applyDecorators(RoleProtected(...roles), UseGuards(AuthGuard(), UserRoleGuard));
 }
