@@ -6,13 +6,13 @@ import { nanoid } from 'nanoid';
 import { CreateApplicationWorkiiDto } from 'src/aplication_workii/dto/create-application_workii.dto';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
-import { User } from 'src/users/users.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as IsUUID } from 'uuid';
 import { CommonService } from '../common/services/handleExceptions.service';
-import { CreateWorkiiDto } from '../workiis/dto/create-workiis.dto';
-import { UpdateWikiiDto } from '../workiis/dto/update-workiis.dto';
-import { Workii } from '../workiis/entities/workiis.entity';
+import { CreateWorkiiDto } from '../workii/dto/create-workii.dto';
+import { UpdateWikiiDto } from '../workii/dto/update-workii.dto';
+import { Workii } from '../workii/entities/workii.entity';
 
 @Injectable()
 export class WorkiisService {

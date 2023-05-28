@@ -8,11 +8,11 @@ import { AuthService } from 'src/auth/auth.service';
 import { PaginationDto } from 'src/common/DTOs/pagination.dto';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { v4 as uuidv4, validate as IsUUID } from 'uuid';
-import { Workii } from '../workiis/entities/workiis.entity';
+import { Workii } from '../workii/entities/workii.entity';
 import { CreateUserDto } from './DTOs/create-user.dto';
 import { UpdateUserDto } from './DTOs/index.dto';
+import { User } from './entities/user.entity';
 import { IUser } from './interfaces/user.interface';
-import { User } from './users.entity';
 
 @Injectable()
 export class UsersService {

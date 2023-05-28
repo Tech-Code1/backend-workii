@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEmail, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import { Workii } from 'src/workiis/entities/workiis.entity';
-import { Etarget } from 'src/workiis/interfaces/target.interface';
+import { Workii } from 'src/workii/entities/workii.entity';
+import { Etarget } from 'src/workii/interfaces/target.interface';
 import { EProfession } from '../interfaces/profession.interface';
 
 export class CreateUserDto {

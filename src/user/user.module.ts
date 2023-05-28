@@ -4,10 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { CommonService } from 'src/common/services/handleExceptions.service';
 import { FileInterceptorService } from 'src/common/services/uploadFiles.service';
-import { Workii } from '../workiis/entities/workiis.entity';
-import { UsersController } from './users.controller';
-import { User } from './users.entity';
-import { UsersService } from './users.service';
+import { Workii } from '../workii/entities/workii.entity';
+import { User } from './entities/user.entity';
+import { UsersController } from './user.controller';
+import { UsersService } from './user.service';
 
 @Module({
 	controllers: [UsersController],

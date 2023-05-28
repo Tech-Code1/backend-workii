@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
-import { Workii } from '../../workiis/entities/workiis.entity';
-import { User } from '../../users/users.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { Workii } from '../../workii/entities/workii.entity';
 
 @Entity({ name: 'aplication_workii' })
 export class ApplicationWorkii {

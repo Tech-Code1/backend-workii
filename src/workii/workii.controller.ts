@@ -7,10 +7,10 @@ import { PostApplicationDto } from 'src/aplication_workii/dto/post-application-w
 import { Auth } from 'src/auth/decorators/index.decorator';
 import { EValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { PaginationDto } from '../common/DTOs/pagination.dto';
-import { CreateWorkiiDto } from './dto/create-workiis.dto';
-import { UpdateWikiiDto } from './dto/update-workiis.dto';
-import { Workii } from './entities/workiis.entity';
-import { WorkiisService } from './workiis.service';
+import { CreateWorkiiDto } from './dto/create-workii.dto';
+import { UpdateWikiiDto } from './dto/update-workii.dto';
+import { Workii } from './entities/workii.entity';
+import { WorkiisService } from './workii.service';
 
 @Controller('workiis')
 @ApiTags('workiis')

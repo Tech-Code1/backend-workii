@@ -3,8 +3,8 @@ import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { ApplicationWorkii } from '../aplication_workii/entities/application_workii.entity';
-import { User } from '../users/users.entity';
-import { Workii } from '../workiis/entities/workiis.entity';
+import { User } from '../user/entities/user.entity';
+import { Workii } from '../workii/entities/workii.entity';
 dotenv.config();
 
 function typeormModuleOptions(): TypeOrmModuleOptions {

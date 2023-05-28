@@ -3,6 +3,7 @@
 /node_modules
 .env*
 !.env.template
+ormconfig.json
 postgres/
 
 # Logs

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/users.entity';
+import { User } from '../../user/entities/user.entity';
 import { Etarget } from '../interfaces/target.interface';
 
 @Entity({ name: 'workiis' })

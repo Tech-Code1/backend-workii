@@ -19,7 +19,7 @@ import { fileNamer } from 'src/common/helpers';
 import { fileFilter } from 'src/common/helpers/fileFilter.helper';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto, UpdateUserDto } from './DTOs/index.dto';
-import { UsersService } from './users.service';
+import { UsersService } from './user.service';
 
 @ApiBearerAuth()
 @ApiTags('users')

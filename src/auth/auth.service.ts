@@ -10,7 +10,7 @@ import { Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { LoginUserDto } from 'src/auth/DTOs/login-user.dto';
-import { User } from 'src/users/users.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { config } from '../auth/config/auth.config';
 import { IJwtPaypload } from './interfaces/jwt-payload.interface';

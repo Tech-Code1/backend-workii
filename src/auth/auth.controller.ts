@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { LoginUserDto } from 'src/auth/DTOs/login-user.dto';
 import { RawHeaders } from 'src/common/decorators/raw-headers.decorators';
-import { User } from 'src/users/users.entity';
+import { User } from 'src/user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { Auth } from './decorators/auth.decorator';
 import { GetUser } from './decorators/get-user.decorator';

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationWorkii } from 'src/aplication_workii/entities/application_workii.entity';
-import { Workii } from 'src/workiis/entities/workiis.entity';
+import { Workii } from 'src/workii/entities/workii.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { EValidRoles } from '../auth/interfaces/valid-roles.interface';
+import { EValidRoles } from '../../auth/interfaces/valid-roles.interface';
 
 @Entity({ name: 'users' })
 export class User {
