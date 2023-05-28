@@ -1,30 +1,37 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import config from './config';
 import { UsersModule } from './users/users.module';
 import { WorkiisModule } from './workiis/workiis.module';
 //import { SeedModule } from './seed/seed.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import Joi from 'joi';
 import { join } from 'path';
 import { ApplicationWorkiiModule } from './aplication_workii/application_workii.module';
 import { ChatModule } from './chat/chat.module';
 import { CommonModule } from './common/common.module';
+import { TYPEORM_CONFIG } from './config/constants';
+import databaseConfig from './config/database.config';
 import { FilesModule } from './files/files.module';
-import { dataSourceOptions } from './shared/typeorm/data-source';
-
 @Module({
 	imports: [
-		AuthModule,
-		ConfigModule.forRoot({
-			envFilePath: '.env',
-			load: [config],
-			isGlobal: true
+		TypeOrmModule.forRootAsync({
+			inject: [ConfigService],
+			useFactory: (config: ConfigService) => config.get<TypeOrmModuleOptions>(TYPEORM_CONFIG)!
 		}),
+		ConfigModule.forRoot({
+			isGlobal: true,
+			load: [databaseConfig],
+			envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+			validationSchema: Joi.object({
+				NODE_ENV: Joi.string().valid('development', 'production').default('development')
+			})
+		}),
+		AuthModule,
 		UsersModule,
 		WorkiisModule,
-		TypeOrmModule.forRoot(dataSourceOptions),
 		CommonModule,
 		FilesModule,
 		ChatModule,
