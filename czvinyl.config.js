@@ -95,7 +95,7 @@ function createQuestions(config) {
 
 function format(answers, config) {
     const type = answers.type;
-    const prefix = answers.prefix;
+    const prefix = `[${answers.prefix}]`;
     const emoji = type.emoji;
     const typeValue = type.value;
     const subject = answers.subject.trim();
