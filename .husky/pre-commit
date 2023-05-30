@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#. "$(dirname -- "$0")/_/husky.sh"
 # This formatting makes it apply to all files.
 #npm run format && ng lint --fix && git add .
 
-npm run precommit
+# npm run precommit

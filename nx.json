@@ -15,7 +15,7 @@
     }
   },
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "."
   },
   "pluginsConfig": {
     "@nx/js": {

@@ -56,6 +56,15 @@
             "codeCoverage": true
           }
         }
+      },
+      "commit": {
+        "executor": "@nrwl/workspace:run-commands",
+        "options": {
+          "commands": [
+            "npm run commit"
+          ],
+          "parallel": false
+        }
       }
     },
     "tags": []
