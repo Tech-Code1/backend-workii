@@ -1,29 +1,22 @@
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-	  "allowSyntheticDefaultImports": true,
-	  "strictNullChecks": true,
-	  "strictBindCallApply": true,
-	  "noFallthroughCasesInSwitch": true,
-	  "forceConsistentCasingInFileNames": true,
-	  "esModuleInterop": true,
-	  "incremental": true,
-	  "removeComments": true,
-	  "rootDir": ".",
-	  "sourceMap": true,
-	  "declaration": true,
-	  "moduleResolution": "node",
-	  "emitDecoratorMetadata": true,
-	  "experimentalDecorators": true,
-	  "importHelpers": true,
-	  "target": "es2015",
-	  "module": "commonjs",
-	  "lib": ["es2017", "dom"],
-	  "skipLibCheck": true,
-	  "skipDefaultLibCheck": true,
-	  "baseUrl": ".",
+		"rootDir": ".",
+		"sourceMap": true,
+		"declaration": false,
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"target": "es2015",
+		"module": "esnext",
+		"lib": ["es2017", "dom"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"baseUrl": ".",
 	  "paths": {
 		"@db/entities": ["libs/database/src/index.ts"]
-	  }
-	}
+	  },
+	},
+	"exclude": ["node_modules", "tmp"]
   }

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { PORT } from '../../../config/constants';
 import { AppModule } from './app.module';
 //import generateTypeormConfigFile from './scripts/generate-typeorm-config-file';
 
@@ -10,6 +11,7 @@ async function main(): Promise<void> {
 	const app = await NestFactory.create(AppModule);
 	const logger = new Logger('main');
 	const config = app.get(ConfigService);
+	const port = parseInt(config.get<string>(PORT), 10) || 3000;
 	const options = new DocumentBuilder()
 		.setTitle('Workii REST API')
 		.setDescription('API REST of Workii')
@@ -35,8 +37,8 @@ async function main(): Promise<void> {
 		origin: 'http://localhost:4200',
 		credentials: true
 	});
-	await app.listen(process.env.PORT || 3000);
-	logger.log(`App running on port ${process.env.PORT || 3000}`);
+	await app.listen(port);
+	logger.log(`App running on port ${await app.getUrl()}`);	
 }
 
 main();

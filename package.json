@@ -11,25 +11,13 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev:api": "nx serve api",
-    "pretty": "npx pretty-quick --pattern \"src/**/*.*(ts|json|html|scss)\" --staged",
-    "eslint:check": "nx exec -- eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "lint": "nx lint",
-    "precommit": "npm run pretty && npm run lint",
+    "make:migration": "nx run database:mig-gen",
+    "make:seed": "nx run database:seed",
+    "migrate:run": "nx run database:mig-run",
+    "migrate:revert": "nx run database:mig-rev",
+    "prepare": "husky install",
     "git:config": "git config --local include.path ../.gitconfig",
-    "prebuild": "rimraf dist",
-    "build": "nx build",
-    "format": "nx exec -- prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nx serve",
-    "start:debug": "nx serve --configuration=debug",
-    "start:prod": "node dist/main",
-    "test": "nx test",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "typeorm": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js -d config/ormconfig.ts",
-    "make:migrate": "npm run typeorm -- migration:generate",
-    "make:seed": "ts-node -- tsconfig-paths/register ts-node node_modules/typeorm-extension/dist/cli/index.js seed",
-    "migrate:run": "npm run typeorm migration:run",
-    "migrate:revert": "npm run typeorm migration:revert",
-    "e2e": "nx e2e"
+    "format": "nx exec -- prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "dependencies": {
     "@commitlint/config-conventional": "^17.6.3",
@@ -59,12 +47,13 @@
     "inquirer-autocomplete-prompt": "^3.0.0",
     "inquirer-maxlength-input-prompt": "^1.0.2",
     "joi": "^17.9.2",
+    "mysql": "^2.18.1",
     "nanoid": "^3.3.4",
     "nodemailer": "^6.8.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.8.0",
+    "pg": "^8.11.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
@@ -73,7 +62,7 @@
     "supertokens-node": "^12.0.5",
     "swagger-ui-express": "^4.6.0",
     "typeorm": "^0.3.11",
-    "typeorm-extension": "^2.8.0",
+    "typeorm-extension": "^2.8.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -86,7 +75,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/inquirer": "^9.0.3",
-    "@types/jest": "28.1.8",
+    "@types/jest": "^28.1.8",
     "@types/ms": "^0.7.31",
     "@types/multer": "^1.4.7",
     "@types/node": "^16.18.34",
@@ -133,7 +122,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./czvinyl.config.js"
+      "path": "./cz.config.js"
     }
   },
   "type": "commonjs",
